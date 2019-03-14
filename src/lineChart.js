@@ -7,6 +7,8 @@ export default class LineChart {
 		this.width = width;
 		this.height = height;
 		this.data = data;
+		this.drawables = [];
+		this.prevAnimationTimestamp = 0;
 		this.appendSvg();
 
 		let previewHeight = Math.round(this.height / 8);
@@ -17,6 +19,7 @@ export default class LineChart {
 			this.view.update({ shownPartStart: this.preview.viewboxStart, shownPartEnd: this.preview.viewboxEnd });
 		}
 		this.preview.onChange();
+		window.requestAnimationFrame(this.animate.bind(this));
 	}
 
 	appendSvg() {
@@ -30,5 +33,12 @@ export default class LineChart {
 		let el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 		Object.entries(attributes).forEach(([name, value]) => el.setAttribute(name, value));
 		return this.svg.appendChild(el);
+	}
+
+	animate(timestamp) {
+		let dt = (timestamp - this.prevAnimationTimestamp) / 1000;
+		this.drawables.forEach(drawable => drawable.onDraw(dt));
+		this.prevAnimationTimestamp = timestamp;
+		window.requestAnimationFrame(this.animate.bind(this));
 	}
 }

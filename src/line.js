@@ -21,7 +21,7 @@ export default class Line {
 	}
 
 	getPoints() {
-		let step = this.chart.width / this.ys.length / (this.shownPartEnd - this.shownPartStart);
+		let step = this.chart.width / Math.max(1, this.ys.length - 1) / (this.shownPartEnd - this.shownPartStart);
 		let xOffset = this.chart.width / (this.shownPartEnd - this.shownPartStart) * this.shownPartStart;
 		return this.ys.map((v, i) => {
 			return [i * step - xOffset, this.y - v * this.yCoeff]

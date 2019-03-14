@@ -38,14 +38,24 @@ export function moveRect(line, x, y, w, h) {
 	line.setAttribute('height', h);
 }
 
-export function updateText(text, x, y, t) {
+export function updateText(text, x, y, t = null) {
 	text.setAttribute('x', x);
 	text.setAttribute('y', y);
-	text.textContent = t;
+	if (t !== null) text.textContent = t;
 }
 
 export function getAxisTicks(max) {
 	const gridN = 5;
 	let step = Math.floor(max * 0.95 / gridN);
 	return Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
+}
+
+export function formatDate(date) {
+	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	return `${months[date.getMonth()]} ${date.getDate()}`;
+}
+
+let pows2 = Array(20).fill(0).map((_, i) => Math.pow(2, i + 1));
+export function ceilToPow2(n) {
+	return pows2.find(p => p >= n);
 }
