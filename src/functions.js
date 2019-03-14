@@ -59,3 +59,10 @@ let pows2 = Array(20).fill(0).map((_, i) => Math.pow(2, i + 1));
 export function ceilToPow2(n) {
 	return pows2.find(p => p >= n);
 }
+
+export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
+	let sign = Math.sign(targetValue - obj[propName]);
+	obj[propName] += sign * changeSpeed * dt;
+	if ((sign > 0 && obj[propName] > targetValue) ||
+		sign < 0 && obj[propName] < targetValue) obj[propName] = targetValue;
+}

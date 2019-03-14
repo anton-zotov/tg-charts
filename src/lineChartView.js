@@ -24,6 +24,7 @@ export default class LineChartView {
 		this.lineSet = new LineSet(this.chart, this.y, this.height, 6, data, defaultViewboxStart, defaultViewboxEnd);
 		this.createYAxes();
 		this.createXTicks();
+		this.chart.drawables.push(this);
 	}
 
 	createYAxes() {
@@ -87,5 +88,8 @@ export default class LineChartView {
 		this.lineSet.update(config);
 		this.updateYAxis();
 		this.updateXAxis(shownPartStart, shownPartEnd);
+	}
+
+	onDraw(dt) {
 	}
 }

@@ -1,4 +1,4 @@
-import { updateText } from "./functions";
+import { updateText, approachTarget } from "./functions";
 
 export default class Text {
 	constructor(chart, x, y, text, size, color, centered = false) {
@@ -42,10 +42,7 @@ export default class Text {
 
 	onDraw(dt) {
 		if (this.opacity !== this.targetOpacity) {
-			let dop = Math.sign(this.targetOpacity - this.opacity);
-			this.opacity += dop * this.opacityPerSecond * dt;
-			if ((dop > 0 && this.opacity > this.targetOpacity) ||
-				dop < 0 && this.opacity < this.targetOpacity) this.opacity = this.targetOpacity;
+			approachTarget(this, 'opacity', this.targetOpacity, this.opacityPerSecond, dt);
 			this.element.setAttribute('fill-opacity', this.opacity);
 		}
 	}
