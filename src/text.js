@@ -1,4 +1,5 @@
 import { updateText, approachTarget } from "./functions";
+import { xTickOpacityPerSecond } from "./config";
 
 export default class Text {
 	constructor(chart, x, y, text, size, color, centered = false) {
@@ -8,7 +9,6 @@ export default class Text {
 		this.centered = centered;
 		this.opacity = 1;
 		this.targetOpacity = 1;
-		this.opacityPerSecond = 4;
 		this.element = chart.addElement('text',
 			{ x, y, 'font-family': 'sans-serif', 'font-size': size + 'px', fill: color });
 		this.element.textContent = text;
@@ -42,7 +42,7 @@ export default class Text {
 
 	onDraw(dt) {
 		if (this.opacity !== this.targetOpacity) {
-			approachTarget(this, 'opacity', this.targetOpacity, this.opacityPerSecond, dt);
+			approachTarget(this, 'opacity', this.targetOpacity, xTickOpacityPerSecond, dt);
 			this.element.setAttribute('fill-opacity', this.opacity);
 		}
 	}
