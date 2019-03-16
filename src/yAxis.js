@@ -12,7 +12,7 @@ export default class YAxis {
 		this.tickFontSize = tickFontSize;
 		this.opacity = this.targetOpacity = 1;
 		this.create();
-		this.view.chart.drawables.push(this);
+		// this.view.chart.drawables.push(this);
 	}
 
 	get y() {
@@ -25,12 +25,18 @@ export default class YAxis {
 			x1: this.x1, y1: this.y, x2: this.x2, y2: this.y,
 			stroke: this.color, 'stroke-width': 1
 		});
-		this.tick = new Text(this.view.chart, this.x1, this.y - 8, this.tickN, this.tickFontSize, '#aaa');
+		this.tick = this.view.chart.addElement('text',
+			{
+				x: this.x1, y: this.y - 8, 'font-family': 'sans-serif',
+				'font-size': this.tickFontSize + 'px', fill: '#aaa'
+			});
+		this.tick.textContent = this.tickN;
 	}
 
 	update() {
-		moveLine(this.line, this.x1, this.y, this.x2, this.y);
-		this.tick.move(this.x1, this.y - 8);
+		this.line.setAttribute('y1', this.y);
+		this.line.setAttribute('y2', this.y);
+		updateText(this.tick, this.x1, this.y - 8);
 	}
 
 	hide() {
@@ -43,22 +49,24 @@ export default class YAxis {
 	}
 
 	onDraw(dt) {
+		if (this.opacity === 0 && this.targetOpacity === 0) {
+			return this.destroy();
+		}
 		if (this.opacity !== this.targetOpacity) {
 			approachTarget(this, 'opacity', this.targetOpacity, yAxisOpacityPerSecond, dt);
 			this.line.setAttribute('stroke-opacity', this.opacity);
-			this.tick.element.setAttribute('fill-opacity', this.opacity);
-		} else {
-			if (this.opacity === 0) {
-				this.destroy();
-			}
+			this.tick.setAttribute('fill-opacity', this.opacity);
 		}
 	}
 
 	destroy() {
-		// this.view.chart.svg.removeChild(this.line);
-		// this.view.chart.svg.removeChild(this.tick.element);
-		this.line.remove();
-		this.tick.element.remove();
+		// this.view.chart.drawables = this.view.chart.drawables.filter(dr => dr !== this);
+		// this.line.remove();
+		this.line.parentNode.removeChild(this.line);
+		this.line = null;
+		this.tick.parentNode.removeChild(this.tick);
+		// this.tick.remove();
+		this.tick = null;
 		this.view.yAxes = this.view.yAxes.filter(yAxis => yAxis !== this);
 	}
 }

@@ -25,16 +25,16 @@ export default class LineChartView {
 		this.xs = data.columns[0].slice(1);
 		this.lineSet = new LineSet(this.chart, this.y, this.height, 6, data, defaultViewboxStart, defaultViewboxEnd);
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
-		this.createYAxes();
+		this.createYAxes(true);
 		this.createXTicks();
 		this.chart.drawables.push(this);
 	}
 
-	createYAxes() {
+	createYAxes(initial = false) {
 		let tickNumbers = getAxisTicks(this.targetHighestPoint);
-		[0, ...tickNumbers].forEach(tickN => {
+		tickNumbers.forEach(tickN => {
 			let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
-			yAxis.show();
+			if (!initial) yAxis.show();
 			this.yAxes.push(yAxis);
 		});
 	}
@@ -43,8 +43,13 @@ export default class LineChartView {
 		let viewboxDiff = defaultViewboxEnd - defaultViewboxStart;
 		let step = this.chart.width / Math.max(1, this.xs.length - 1) / viewboxDiff;
 		let xOffset = this.chart.width / viewboxDiff * defaultViewboxStart;
+		let showEvery = 0;
+		if (step < this.xTickWidth) {
+			let del = this.xTickWidth / step;
+			showEvery = ceilToPow2(del);
+		}
 		this.xs.forEach((ts, i) => {
-			let t = new Text(this.chart, i * step - xOffset, this.xTickY, formatDate(new Date(ts)), tickFontSize, '#aaa', true)
+			let t = new Text(this.chart, i * step - xOffset, this.xTickY, formatDate(new Date(ts)), tickFontSize, '#aaa', true, true);
 			this.xAxesTicks.push(t);
 			this.xTickWidth = Math.max(this.xTickWidth, t.width);
 		});
@@ -62,9 +67,14 @@ export default class LineChartView {
 		}
 		this.xAxesTicks.forEach((tick, i) => {
 			tick.move(i * step - xOffset, this.xTickY);
-			if (showEvery && (i + 1) % showEvery !== 0) tick.hide();
+			if (showEvery && i % showEvery !== 0) tick.hide();
 			else tick.show();
 		});
+	}
+
+	isShown(i, step) {
+		if (step >= this.xTickWidth) return true;
+		return !!(i % ceilToPow2(this.xTickWidth / step));
 	}
 
 	update(config) {
@@ -90,7 +100,10 @@ export default class LineChartView {
 			approachTarget(this, 'highestPoint', this.targetHighestPoint, this.highestPointChangeSpeed, dt);
 			this.lineSet.highestPoint = this.highestPoint;
 			this.lineSet.redraw();
-			this.yAxes.forEach(yAxis => yAxis.update());
+			this.yAxes.forEach(yAxis => {
+				yAxis.update();
+				yAxis.onDraw(dt);
+			});
 		}
 	}
 

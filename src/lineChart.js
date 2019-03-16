@@ -21,6 +21,10 @@ export default class LineChart {
 		}
 		this.preview.onChange();
 		window.requestAnimationFrame(this.animate.bind(this));
+
+		// setInterval(() => {
+		// 	console.log('childElementCount', this.svg.childElementCount);
+		// }, 500);
 	}
 
 	appendSvg() {
@@ -33,7 +37,6 @@ export default class LineChart {
 	appendButtons() {
 		let buttonsHolder = document.createElement('div');
 		buttonsHolder.classList.add('bh');
-		console.log('this.data.names', this.data.names);
 		Object.entries(this.data.names).forEach(([name, label]) => {
 			let button = document.createElement('button');
 			button.textContent = label;
@@ -55,6 +58,7 @@ export default class LineChart {
 		let el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 		Object.entries(attributes).forEach(([name, value]) => el.setAttribute(name, value));
 		return this.svg.appendChild(el);
+		return el;
 	}
 
 	animate(timestamp) {
