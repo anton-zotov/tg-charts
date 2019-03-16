@@ -10,6 +10,7 @@ export default class LineChart {
 		this.drawables = [];
 		this.prevAnimationTimestamp = 0;
 		this.appendSvg();
+		this.appendButtons();
 
 		let previewHeight = Math.round(this.height / 8);
 		this.view = new LineChartView(this, 50, this.height - previewHeight * 2);
@@ -27,6 +28,27 @@ export default class LineChart {
 		this.svg.setAttribute('width', this.width);
 		this.svg.setAttribute('height', this.height);
 		this.parent.appendChild(this.svg);
+	}
+
+	appendButtons() {
+		let buttonsHolder = document.createElement('div');
+		buttonsHolder.classList.add('bh');
+		console.log('this.data.names', this.data.names);
+		Object.entries(this.data.names).forEach(([name, label]) => {
+			let button = document.createElement('button');
+			button.textContent = label;
+			button.classList.add('c');
+			button.onclick = () => {
+				this.view.toggleLine(name);
+				if (button.classList.contains('c')) {
+					button.classList.remove('c');
+				} else {
+					button.classList.add('c');
+				}
+			}
+			buttonsHolder.appendChild(button);
+		});
+		this.parent.appendChild(buttonsHolder);
 	}
 
 	addElement(tagName, attributes = {}) {

@@ -71,6 +71,11 @@ export default class LineChartView {
 		let { shownPartStart, shownPartEnd } = config;
 		this.lineSet.update(config);
 		this.updateXAxis(shownPartStart, shownPartEnd);
+		this.onHpChange();
+
+	}
+
+	onHpChange() {
 		let hp = this.targetHighestPoint;
 		this.targetHighestPoint = this.lineSet.getHighestPoint();
 		if (hp !== this.targetHighestPoint) {
@@ -84,8 +89,13 @@ export default class LineChartView {
 		if (this.highestPoint !== this.targetHighestPoint) {
 			approachTarget(this, 'highestPoint', this.targetHighestPoint, this.highestPointChangeSpeed, dt);
 			this.lineSet.highestPoint = this.highestPoint;
-			this.lineSet.redrawYAxes();
+			this.lineSet.redraw();
 			this.yAxes.forEach(yAxis => yAxis.update());
 		}
+	}
+
+	toggleLine(lineName) {
+		this.lineSet.toggleLine(lineName);
+		this.onHpChange();
 	}
 }

@@ -24,14 +24,14 @@ export default class LineSet {
 	}
 
 	getHighestPoint() {
-		return Math.max(...this.lines.map(line => line.getHighestPoint()));
+		return Math.max(...this.lines.filter(line => line.shown).map(line => line.getHighestPoint()));
 	}
 
 	update(config) {
 		this.lines.forEach(line => line.config(config));
 		// this.targetHighestPoint = this.getHighestPoint();
 		// this.yAxesMoveSpeed = Math.abs(this.targetHighestPoint - this.highestPoint) / lineMoveAnimationTime;
-		this.redrawYAxes()
+		this.redraw()
 	}
 
 	// onDraw(dt) {
@@ -41,11 +41,15 @@ export default class LineSet {
 	// 	}
 	// }
 
-	redrawYAxes() {
+	redraw() {
 		let yCoeff = this.highestPoint ? (this.height / this.highestPoint) : 0;
 		this.lines.forEach(line => {
 			line.yCoeff = yCoeff;
 			line.redraw();
 		});
+	}
+
+	toggleLine(lineName) {
+		this.lines.find(line => line.name === lineName).toggle();
 	}
 }

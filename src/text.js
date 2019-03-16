@@ -32,12 +32,10 @@ export default class Text {
 
 	hide() {
 		this.targetOpacity = 0;
-		// this.element.setAttribute('visibility', 'hidden');
 	}
 
 	show() {
 		this.targetOpacity = 1;
-		//this.element.removeAttribute('visibility');
 	}
 
 	onDraw(dt) {

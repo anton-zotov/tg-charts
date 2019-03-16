@@ -9,3 +9,22 @@ html, body {
 svg {
 	user-select: none; 
 }
+.bh {
+	padding-top: 10px;
+	padding-left: 10px;
+}
+.bh button,
+.bh button:focus,
+.bh button:active {
+	padding: 10px;
+	background-color: white;
+	border: 1px solid #ccc;
+	border-radius: 16px;
+	font-size: 16px;
+	outline:none;
+	margin-right: 10px;
+}
+.bh button.c {
+	background-color: #73c03a;
+	color: white;
+}
