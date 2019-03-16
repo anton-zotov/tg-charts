@@ -1,7 +1,7 @@
 import { createLineSet, getAxisTicks, moveLine, updateText, formatDate, ceilToPow2, approachTarget } from "./functions";
 import LineSet from "./lineSet";
 import Text from "./text";
-import YAxis from "./axis";
+import YAxis from "./yAxis";
 import { lineMoveAnimationTime } from "./config";
 
 const yAxesStartX = 15;

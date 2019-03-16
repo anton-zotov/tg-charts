@@ -49,8 +49,16 @@ export default class YAxis {
 			this.tick.element.setAttribute('fill-opacity', this.opacity);
 		} else {
 			if (this.opacity === 0) {
-				this.view.yAxes = this.view.yAxes.filter(yAxis => yAxis !== this);
+				this.destroy();
 			}
 		}
+	}
+
+	destroy() {
+		// this.view.chart.svg.removeChild(this.line);
+		// this.view.chart.svg.removeChild(this.tick.element);
+		this.line.remove();
+		this.tick.element.remove();
+		this.view.yAxes = this.view.yAxes.filter(yAxis => yAxis !== this);
 	}
 }
