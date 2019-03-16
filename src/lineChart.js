@@ -1,5 +1,6 @@
 import LineChartView from "./lineChartView";
 import Preview from "./preview";
+import { minDt } from "./config";
 
 export default class LineChart {
 	constructor(parent, width, height, data) {
@@ -9,6 +10,8 @@ export default class LineChart {
 		this.data = data;
 		this.drawables = [];
 		this.prevAnimationTimestamp = 0;
+		this.isViewDirty = true;
+		this.appendFPS();
 		this.appendSvg();
 		this.appendButtons();
 
@@ -16,10 +19,7 @@ export default class LineChart {
 		this.view = new LineChartView(this, 50, this.height - previewHeight * 2);
 		this.view.createLines(data);
 		this.preview = new Preview(this, this.height - previewHeight, previewHeight, data);
-		this.preview.onChange = () => {
-			this.view.update({ shownPartStart: this.preview.viewboxStart, shownPartEnd: this.preview.viewboxEnd });
-		}
-		this.preview.onChange();
+		this.preview.onChange = () => this.isViewDirty = true;
 		window.requestAnimationFrame(this.animate.bind(this));
 
 		// setInterval(() => {
@@ -54,6 +54,12 @@ export default class LineChart {
 		this.parent.appendChild(buttonsHolder);
 	}
 
+	appendFPS() {
+		this.fps = document.createElement('div');
+		this.fps.classList.add('fps')
+		this.parent.appendChild(this.fps);
+	}
+
 	addElement(tagName, attributes = {}) {
 		let el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 		Object.entries(attributes).forEach(([name, value]) => el.setAttribute(name, value));
@@ -63,8 +69,14 @@ export default class LineChart {
 
 	animate(timestamp) {
 		let dt = (timestamp - this.prevAnimationTimestamp) / 1000;
+		if (minDt > dt) return window.requestAnimationFrame(this.animate.bind(this));
+		if (this.isViewDirty) {
+			this.view.update({ shownPartStart: this.preview.viewboxStart, shownPartEnd: this.preview.viewboxEnd });
+			this.isViewDirty = false;
+		}
 		this.drawables.forEach(drawable => drawable.onDraw(dt));
 		this.prevAnimationTimestamp = timestamp;
+		this.fps.textContent = 'FPS: ' + Math.round(1 / dt);
 		window.requestAnimationFrame(this.animate.bind(this));
 	}
 }

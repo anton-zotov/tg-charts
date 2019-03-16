@@ -1,4 +1,4 @@
-import { createLineSet, getAxisTicks, moveLine, updateText, formatDate, ceilToPow2, approachTarget } from "./functions";
+import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget } from "./functions";
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";

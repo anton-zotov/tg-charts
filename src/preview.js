@@ -1,4 +1,4 @@
-import { moveLine, addElement, moveRect } from "./functions";
+import { addElement, moveLineX } from "./functions";
 import LineSet from "./lineSet";
 
 export default class Preview {
@@ -9,19 +9,32 @@ export default class Preview {
 		this.lineSet = new LineSet(chart, y, height, 3, data);
 		this.viewboxStart = 0.6;
 		this.viewboxEnd = 0.8;
+		this.widthChanged = this.shadowWidthChanged = true;
 		this.viewboxStartPx = chart.width * this.viewboxStart;
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		let color = '#bbb';
 
-		this.leftShadow = addElement(chart.svg, 'rect', { fill: '#ddd', 'fill-opacity': '0.7' });
-		this.rightShadow = addElement(chart.svg, 'rect', { fill: '#ddd', 'fill-opacity': '0.7' });
-		this.viewboxRect = addElement(chart.svg, 'rect', { fill: 'none', 'pointer-events': 'visible' });
-		this.topViewboxBorder = addElement(chart.svg, 'line', { stroke: color, 'stroke-opacity': '0.7' });
-		this.bottomViewboxBorder = addElement(chart.svg, 'line', { stroke: color, 'stroke-opacity': '0.7' });
-		this.leftViewboxBorder = addElement(chart.svg, 'line', { stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10 });
-		this.rightViewboxBorder = addElement(chart.svg, 'line', { stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10 });
-		this.leftViewboxAdditionalBorder = addElement(chart.svg, 'rect', { fill: 'none', 'pointer-events': 'visible' });
-		this.rightViewboxAdditionalBorder = addElement(chart.svg, 'rect', { fill: 'none', 'pointer-events': 'visible' });
+		this.viewboxRect = addElement(chart.svg, 'rect',
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y });
+
+		this.leftShadow = addElement(chart.svg, 'rect',
+			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
+		this.rightShadow = addElement(chart.svg, 'rect',
+			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
+
+		this.leftViewboxAdditionalBorder = addElement(chart.svg, 'rect',
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
+		this.rightViewboxAdditionalBorder = addElement(chart.svg, 'rect',
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
+
+		this.topViewboxBorder = addElement(chart.svg, 'line',
+			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y, y2: this.y });
+		this.bottomViewboxBorder = addElement(chart.svg, 'line',
+			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y + this.height, y2: this.y + this.height });
+		this.leftViewboxBorder = addElement(chart.svg, 'line',
+			{ stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
+		this.rightViewboxBorder = addElement(chart.svg, 'line',
+			{ stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
 
 		this.viewboxRect.onmousedown = this.onViewboxClick.bind(this);
 		this.viewboxRect.addEventListener('touchstart', (e) => this.onViewboxClick(e.touches[0]));
@@ -70,6 +83,7 @@ export default class Preview {
 		this.viewboxStartPx = Math.max(0, this.viewboxStartPx + pageX - this.leftHandleDragStartX);
 		this.viewboxStartPx = Math.min(this.viewboxStartPx, this.viewboxEndPx);
 		this.calcViewboxPercentage();
+		this.widthChanged = true;
 		this.positionViewbox();
 		this.leftHandleDragStartX = pageX;
 	}
@@ -78,6 +92,7 @@ export default class Preview {
 		this.viewboxEndPx = Math.min(this.chart.width, this.viewboxEndPx + pageX - this.rightHandleDragStartX);
 		this.viewboxEndPx = Math.max(this.viewboxStartPx, this.viewboxEndPx);
 		this.calcViewboxPercentage();
+		this.widthChanged = true;
 		this.positionViewbox();
 		this.rightHandleDragStartX = pageX;
 	}
@@ -96,6 +111,7 @@ export default class Preview {
 			}
 		}
 		this.calcViewboxPercentage();
+		this.shadowWidthChanged = true;
 		this.positionViewbox();
 		this.dragStartX = pageX;
 	}
@@ -109,14 +125,21 @@ export default class Preview {
 	positionViewbox() {
 		let left = this.viewboxStartPx;
 		let right = this.viewboxEndPx;
-		moveLine(this.topViewboxBorder, left, this.y, right, this.y);
-		moveLine(this.bottomViewboxBorder, left, this.y + this.height, right, this.y + this.height);
-		moveLine(this.leftViewboxBorder, left, this.y, left, this.y + this.height);
-		moveLine(this.rightViewboxBorder, right, this.y, right, this.y + this.height);
-		moveRect(this.viewboxRect, left, this.y, right - left, this.height);
-		moveRect(this.leftShadow, 0, this.y, left - 5, this.height);
-		moveRect(this.rightShadow, right + 5, this.y, this.chart.width - right, this.height);
-		moveRect(this.leftViewboxAdditionalBorder, left - 40, this.y, 35, this.height);
-		moveRect(this.rightViewboxAdditionalBorder, right + 5, this.y, 35, this.height);
+		moveLineX(this.topViewboxBorder, left, right);
+		moveLineX(this.bottomViewboxBorder, left, right);
+		moveLineX(this.leftViewboxBorder, left, left);
+		moveLineX(this.rightViewboxBorder, right, right);
+		let rects = [
+			[this.viewboxRect, left, right - left, this.widthChanged],
+			[this.leftShadow, 0, Math.max(left - 5, 0), this.shadowWidthChanged || this.widthChanged],
+			[this.rightShadow, right + 5, this.chart.width - right, this.shadowWidthChanged || this.widthChanged],
+			[this.leftViewboxAdditionalBorder, left - 40, 0, false],
+			[this.rightViewboxAdditionalBorder, right + 5, 0, false],
+		];
+		rects.forEach(([rect, x, width, widthChanged]) => {
+			rect.setAttribute('x', x);
+			if (widthChanged) rect.setAttribute('width', width);
+		});
+		this.widthChanged = false;
 	}
 }

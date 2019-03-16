@@ -1,5 +1,5 @@
 import Text from "./text";
-import { moveLine, updateText, approachTarget } from "./functions";
+import { approachTarget } from "./functions";
 import { yAxisOpacityPerSecond } from "./config";
 
 export default class YAxis {
@@ -36,7 +36,7 @@ export default class YAxis {
 	update() {
 		this.line.setAttribute('y1', this.y);
 		this.line.setAttribute('y2', this.y);
-		updateText(this.tick, this.x1, this.y - 8);
+		this.tick.setAttribute('y', this.y - 8);
 	}
 
 	hide() {

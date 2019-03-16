@@ -24,18 +24,14 @@ export function addPath(svg, coords, attributes = {}) {
 	});
 }
 
-export function moveLine(line, x1, y1, x2, y2) {
+export function moveLineX(line, x1, x2) {
 	line.setAttribute('x1', x1);
 	line.setAttribute('x2', x2);
-	line.setAttribute('y1', y1);
-	line.setAttribute('y2', y2);
 }
 
-export function moveRect(line, x, y, w, h) {
-	line.setAttribute('x', x);
-	line.setAttribute('y', y);
-	line.setAttribute('width', Math.max(0, w));
-	line.setAttribute('height', h);
+export function moveLineY(line, y1, y2) {
+	line.setAttribute('y1', y1);
+	line.setAttribute('y2', y2);
 }
 
 export function updateText(text, x, y, t = null) {
