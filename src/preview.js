@@ -1,5 +1,6 @@
 import { addElement, moveLineX } from "./functions";
 import LineSet from "./lineSet";
+import { defaultViewboxStart, defaultViewboxEnd } from "./config";
 
 export default class Preview {
 	constructor(chart, y, height, data) {
@@ -7,8 +8,8 @@ export default class Preview {
 		this.y = y;
 		this.height = height;
 		this.lineSet = new LineSet(chart, y, height, 3, data);
-		this.viewboxStart = 0.6;
-		this.viewboxEnd = 0.8;
+		this.viewboxStart = defaultViewboxStart;
+		this.viewboxEnd = defaultViewboxEnd;
 		this.widthChanged = this.shadowWidthChanged = true;
 		this.viewboxStartPx = chart.width * this.viewboxStart;
 		this.viewboxEndPx = chart.width * this.viewboxEnd;

@@ -9,7 +9,7 @@ function createChart(parent, data) {
 }
 
 function start() {
-	createChart(document.body, data[0]);
+	createChart(document.body, data[5]);
 }
 
 window.addEventListener('load', start);

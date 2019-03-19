@@ -2,11 +2,9 @@ import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget } f
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
-import { lineMoveAnimationTime } from "./config";
+import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd } from "./config";
 
 const yAxesStartX = 15;
-const defaultViewboxStart = 0.6;
-const defaultViewboxEnd = 0.8;
 const tickFontSize = 30;
 
 export default class LineChartView {
@@ -43,11 +41,6 @@ export default class LineChartView {
 		let viewboxDiff = defaultViewboxEnd - defaultViewboxStart;
 		let step = this.chart.width / Math.max(1, this.xs.length - 1) / viewboxDiff;
 		let xOffset = this.chart.width / viewboxDiff * defaultViewboxStart;
-		let showEvery = 0;
-		if (step < this.xTickWidth) {
-			let del = this.xTickWidth / step;
-			showEvery = ceilToPow2(del);
-		}
 		this.xs.forEach((ts, i) => {
 			let t = new Text(this.chart, i * step - xOffset, this.xTickY, formatDate(new Date(ts)), tickFontSize, '#aaa', true, true);
 			this.xAxesTicks.push(t);
@@ -60,6 +53,7 @@ export default class LineChartView {
 		let viewboxDiff = shownPartEnd - shownPartStart;
 		let step = this.chart.width / Math.max(1, this.xs.length - 1) / viewboxDiff;
 		let xOffset = this.chart.width / viewboxDiff * shownPartStart;
+		let tx = step - xOffset;
 		let showEvery = 0;
 		if (step < this.xTickWidth) {
 			let del = this.xTickWidth / step;

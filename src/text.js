@@ -16,17 +16,19 @@ export default class Text {
 		this.height = box.height;
 		if (centered) {
 			this.x = x - this.width / 2;
-			this.element.setAttribute('x', x);
+			this.element.setAttribute('x', this.x);
 		}
 		this.chart.drawables.push(this);
 	}
 
 	move(x, y) {
 		if (this.opacity && (this.inViewport(this.x) || this.inViewport(x))) {
-			this.x = x;
-			updateText(this.element, this.centered ? x - this.width / 2 : x, y);
+			this.x = this.centered ? x : x - this.width / 2;
+			// this.x = x;
+			updateText(this.element, this.x, y);
 			return 1;
 		}
+		this.x = x;
 		return 0;
 	}
 
@@ -42,14 +44,23 @@ export default class Text {
 
 	hide() {
 		this.targetOpacity = 0;
+		if (this.opacity !== this.targetOpacity && !this.inViewport(this.x)) {
+			this.opacity = 0;
+			this.element.setAttribute('fill-opacity', this.opacity);
+		}
 	}
 
 	show() {
 		this.targetOpacity = 1;
+		if (this.opacity !== this.targetOpacity && !this.inViewport(this.x)) {
+			this.opacity = 1;
+			this.element.setAttribute('fill-opacity', this.opacity);
+		}
 	}
 
 	onDraw(dt) {
 		if (this.opacity !== this.targetOpacity) {
+			// console.log('animate', this.element.textContent, this.x);
 			approachTarget(this, 'opacity', this.targetOpacity, xTickOpacityPerSecond, dt);
 			this.element.setAttribute('fill-opacity', this.opacity);
 		}
