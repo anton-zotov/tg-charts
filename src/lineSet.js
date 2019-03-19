@@ -24,7 +24,9 @@ export default class LineSet {
 	}
 
 	getHighestPoint() {
-		return Math.max(...this.lines.filter(line => line.shown).map(line => line.getHighestPoint()));
+		let lines = this.lines.filter(line => line.shown);
+		if (lines.length) this.lastHighestPoint = Math.max(...lines.map(line => line.getHighestPoint()));
+		return this.lastHighestPoint;
 	}
 
 	update(config) {
@@ -51,5 +53,11 @@ export default class LineSet {
 
 	toggleLine(lineName) {
 		this.lines.find(line => line.name === lineName).toggle();
+	}
+
+	getPointsAtCoord(x) {
+		return this.lines.map(line => {
+			return [line, line.getPointAtCoord(x)];
+		})
 	}
 }

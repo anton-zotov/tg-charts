@@ -16,20 +16,44 @@ export default class Line {
 		this.opacity = this.targetOpacity = 1;
 		this.create();
 		this.chart.drawables.push(this);
+		this.pointPosCache = [];
 	}
 
 	getHighestPoint() {
-		let firstIndex = Math.floor(this.ys.length * this.shownPartStart);
-		let endIndex = Math.min(this.ys.length, Math.ceil(this.ys.length * this.shownPartEnd) + 1);
+		let [firstIndex, endIndex] = this.getShownIndexes();
 		return Math.max(...this.ys.slice(firstIndex, endIndex));
 	}
 
-	getPoints() {
+	getShownIndexes() {
+		let firstIndex = Math.max(0, Math.floor((this.ys.length - 1) * this.shownPartStart));
+		let endIndex = Math.min(this.ys.length, Math.ceil((this.ys.length - 1) * this.shownPartEnd) + 1);
+		return [firstIndex, endIndex];
+	}
+
+	getPoints(onlyShown = true) {
 		let step = this.chart.width / Math.max(1, this.ys.length - 1) / (this.shownPartEnd - this.shownPartStart);
 		let xOffset = this.chart.width / (this.shownPartEnd - this.shownPartStart) * this.shownPartStart;
-		return this.ys.map((v, i) => {
-			return [i * step - xOffset, this.y - v * this.yCoeff]
+		let ys = this.ys;
+		let startI = 0;
+		if (onlyShown) {
+			let [firstIndex, endIndex] = this.getShownIndexes();
+			startI = firstIndex;
+			ys = this.ys.slice(firstIndex, endIndex);
+		}
+		this.pointPosCache = [];
+		let currentPos = (-1 + startI) * step - xOffset;;
+		let temp = ys.map((v, i) => {
+			this.pointPosCache.push([currentPos + step / 2, currentPos, i + startI, v]);
+			currentPos = (i + startI) * step - xOffset;
+			return [currentPos, this.y - v * this.yCoeff]
 		});
+		return temp;
+	}
+
+	getPointAtCoord(x) {
+		let res = this.pointPosCache.find(([px]) => px > x);
+		if (!res) res = this.pointPosCache[this.pointPosCache.length - 1];
+		return res;
 	}
 
 	create() {

@@ -14,27 +14,24 @@ export default class Text {
 		let box = this.element.getBBox();
 		this.width = box.width;
 		this.height = box.height;
-		if (centered) {
-			this.x = x - this.width / 2;
-			this.element.setAttribute('x', this.x);
-		}
+		this.x = x - this.width / 2;
+		this.element.setAttribute('x', this.x);
 		this.chart.drawables.push(this);
 	}
 
-	move(x, y) {
+	moveX(x) {
+		x -= this.width / 2;
 		if (this.opacity && (this.inViewport(this.x) || this.inViewport(x))) {
-			this.x = this.centered ? x : x - this.width / 2;
-			// this.x = x;
-			updateText(this.element, this.x, y);
+			this.x = x;
+			this.element.setAttribute('x', this.x);
 			return 1;
 		}
-		this.x = x;
 		return 0;
 	}
 
 	inViewport(x) {
-		let r = this.centered ? x + this.width / 2 : x + this.width;
-		let l = this.centered ? x - this.width / 2 : x;
+		let r = x + this.width;
+		let l = x;
 		return (r >= 0 && l < this.chart.width);
 	}
 
@@ -52,6 +49,9 @@ export default class Text {
 
 	show() {
 		this.targetOpacity = 1;
+		if (this.opacity === 0) {
+			this.opacity = 0.0001;
+		}
 		if (this.opacity !== this.targetOpacity && !this.inViewport(this.x)) {
 			this.opacity = 1;
 			this.element.setAttribute('fill-opacity', this.opacity);

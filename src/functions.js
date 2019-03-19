@@ -40,15 +40,25 @@ export function updateText(text, x, y, t = null) {
 	if (t !== null) text.textContent = t;
 }
 
+let ticksCache = {};
 export function getAxisTicks(max) {
-	const gridN = 5;
-	let step = Math.floor(max * 0.95 / gridN);
-	return Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
+	if (!ticksCache[max]) {
+		const gridN = 5;
+		let step = Math.floor(max * 0.95 / gridN);
+		let ticks = Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
+		ticksCache[max] = ticks;
+	}
+	return ticksCache[max];
 }
 
+let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 export function formatDate(date) {
-	let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 	return `${months[date.getMonth()]} ${date.getDate()}`;
+}
+
+let daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export function getDayOfWeek(date) {
+	return daysOfWeek[date.getDay()];
 }
 
 let pows2 = Array(20).fill(0).map((_, i) => Math.pow(2, i + 1));

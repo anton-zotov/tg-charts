@@ -3,6 +3,7 @@ import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
 import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd } from "./config";
+import { Popup } from "./popup";
 
 const yAxesStartX = 15;
 const tickFontSize = 30;
@@ -17,6 +18,22 @@ export default class LineChartView {
 		this.xTickWidth = 0;
 		this.xTickY = this.y + this.height + 26;
 		this.highestPointChangeSpeed = 0;
+
+		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: '#fff' });
+		this.background.addEventListener('mousemove', this.onHover.bind(this));
+		this.background.addEventListener('mouseleave', () => this.popup.hide());
+
+		this.popup = new Popup(chart, y, height);
+	}
+
+	onHover(e) {
+		let points = this.lineSet.getPointsAtCoord(e.pageX);
+		this.showPopup(points);
+	}
+
+	showPopup(points) {
+		if (!points.length) return;
+		this.popup.move(points);
 	}
 
 	createLines(data) {
@@ -59,11 +76,13 @@ export default class LineChartView {
 			let del = this.xTickWidth / step;
 			showEvery = ceilToPow2(del);
 		}
+		let moved = 0;
 		this.xAxesTicks.forEach((tick, i) => {
-			tick.move(i * step - xOffset, this.xTickY);
 			if (showEvery && i % showEvery !== 0) tick.hide();
 			else tick.show();
+			moved += tick.moveX(i * step - xOffset);
 		});
+		// console.log('moved', moved);
 	}
 
 	isShown(i, step) {

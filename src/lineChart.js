@@ -43,6 +43,7 @@ export default class LineChart {
 			button.classList.add('c');
 			button.onclick = () => {
 				this.view.toggleLine(name);
+				this.preview.toggleLine(name);
 				if (button.classList.contains('c')) {
 					button.classList.remove('c');
 				} else {
@@ -76,7 +77,6 @@ export default class LineChart {
 		}
 		this.drawables.forEach(drawable => drawable.onDraw(dt));
 		this.prevAnimationTimestamp = timestamp;
-		this.fps.textContent = 'FPS: ' + Math.round(1 / dt);
 		window.requestAnimationFrame(this.animate.bind(this));
 	}
 }
