@@ -9,7 +9,9 @@ function createChart(parent, data) {
 }
 
 function start() {
-	createChart(document.body, data[0]);
+	data.forEach(d => {
+		createChart(document.body,d);
+	});
 }
 
 window.addEventListener('load', start);

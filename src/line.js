@@ -2,9 +2,10 @@ import { addPath, makeD, approachTarget } from "./functions";
 import { yAxisOpacityPerSecond, lineOpacityPerSecond } from "./config";
 
 export default class Line {
-	constructor(chart, y, yCoeff, name, ys, color, width, shownPartStart, shownPartEnd) {
+	constructor(chart, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd) {
 		this.chart = chart;
 		this.name = name;
+		this.label = label;
 		this.ys = ys;
 		this.color = color;
 		this.width = width;

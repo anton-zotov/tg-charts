@@ -1,6 +1,8 @@
 import LineChartView from "./lineChartView";
 import Preview from "./preview";
-import { minDt } from "./config";
+import { minDt, lightTheme } from "./config";
+import { getDefs, appendDefs } from "./defs";
+import { dc } from "./functions";
 
 export default class LineChart {
 	constructor(parent, width, height, data) {
@@ -11,8 +13,10 @@ export default class LineChart {
 		this.drawables = [];
 		this.prevAnimationTimestamp = 0;
 		this.isViewDirty = true;
+		this.theme = lightTheme;
 		this.appendFPS();
 		this.appendSvg();
+		appendDefs(this.svg);
 		this.appendButtons();
 
 		let previewHeight = Math.round(this.height / 8);
@@ -35,10 +39,10 @@ export default class LineChart {
 	}
 
 	appendButtons() {
-		let buttonsHolder = document.createElement('div');
+		let buttonsHolder = dc('div');
 		buttonsHolder.classList.add('bh');
 		Object.entries(this.data.names).forEach(([name, label]) => {
-			let button = document.createElement('button');
+			let button = dc('button');
 			button.textContent = label;
 			button.classList.add('c');
 			button.onclick = () => {

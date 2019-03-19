@@ -15,7 +15,7 @@ export default class LineSet {
 		let yCoeff = maxY ? (height / maxY) : 0;
 		for (let column of columns) {
 			let [name, ...ys] = column;
-			this.lines.push(new Line(chart, y + height, yCoeff, name, ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd));
+			this.lines.push(new Line(chart, y + height, yCoeff, name, data.names[name], ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd));
 		}
 		this.highestPoint = maxY;
 		this.targetHighestPoint = maxY;

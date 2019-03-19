@@ -72,3 +72,5 @@ export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
 	if ((sign > 0 && obj[propName] > targetValue) ||
 		sign < 0 && obj[propName] < targetValue) obj[propName] = targetValue;
 }
+
+export const dc = document.createElement.bind(document);

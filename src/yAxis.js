@@ -1,6 +1,7 @@
 import Text from "./text";
 import { approachTarget } from "./functions";
-import { yAxisOpacityPerSecond } from "./config";
+import { yAxisOpacityPerSecond, fontFamily } from "./config";
+import { fs } from "./font";
 
 export default class YAxis {
 	constructor(view, x1, x2, color, tickN, tickFontSize) {
@@ -27,8 +28,8 @@ export default class YAxis {
 		});
 		this.tick = this.view.chart.addElement('text',
 			{
-				x: this.x1, y: this.y - 8, 'font-family': 'sans-serif',
-				'font-size': this.tickFontSize + 'px', fill: '#aaa'
+				x: this.x1, y: this.y - 8, ...fontFamily,
+				...fs(this.tickFontSize), fill: '#aaa'
 			});
 		this.tick.textContent = this.tickN;
 	}

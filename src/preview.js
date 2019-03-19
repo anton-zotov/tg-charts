@@ -15,23 +15,23 @@ export default class Preview {
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
-		
+
 		this.viewboxRect = addElement(chart.svg, 'rect',
-		{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y });
-		
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y });
+
 		this.leftShadow = addElement(chart.svg, 'rect',
-		{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
+			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
 		this.rightShadow = addElement(chart.svg, 'rect',
-		{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
-		
+			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
+
 		this.leftViewboxAdditionalBorder = addElement(chart.svg, 'rect',
-		{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
 		this.rightViewboxAdditionalBorder = addElement(chart.svg, 'rect',
-		{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
-		
+			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
+
 		let color = '#bbb';
 		this.topViewboxBorder = addElement(chart.svg, 'line',
-		{ stroke: color, 'stroke-opacity': '0.7', y1: this.y, y2: this.y });
+			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y, y2: this.y });
 		this.bottomViewboxBorder = addElement(chart.svg, 'line',
 			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y + this.height, y2: this.y + this.height });
 		this.leftViewboxBorder = addElement(chart.svg, 'line',
@@ -49,10 +49,10 @@ export default class Preview {
 		this.rightViewboxBorder.addEventListener('touchstart', (e) => this.onRightHandleClick(e.touches[0]));
 		this.rightViewboxAdditionalBorder.addEventListener('touchstart', (e) => this.onRightHandleClick(e.touches[0]));
 
-		document.onmousemove = this.onMouseMove.bind(this);
+		document.addEventListener('mousemove', this.onMouseMove.bind(this));
 		document.addEventListener('touchmove', (e) => this.onMouseMove(e.touches[0]));
 
-		document.onmouseup = this.onMouseRelease.bind(this);
+		document.addEventListener('mouseup', this.onMouseRelease.bind(this));
 		document.addEventListener('touchend', this.onMouseRelease.bind(this));
 
 		this.positionViewbox();

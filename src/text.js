@@ -1,5 +1,6 @@
 import { updateText, approachTarget } from "./functions";
-import { xTickOpacityPerSecond } from "./config";
+import { xTickOpacityPerSecond, fontFamily } from "./config";
+import { fs } from "./font";
 
 export default class Text {
 	constructor(chart, x, y, text, size, color, centered = false, transparent = false) {
@@ -9,7 +10,7 @@ export default class Text {
 		this.centered = centered;
 		this.opacity = this.targetOpacity = transparent ? 0 : 1;
 		this.element = chart.addElement('text',
-			{ x, y, 'font-family': 'sans-serif', 'font-size': size + 'px', fill: color, 'fill-opacity': this.opacity });
+			{ x, y, ...fontFamily, ...fs(size), fill: color, 'fill-opacity': this.opacity });
 		this.element.textContent = text;
 		let box = this.element.getBBox();
 		this.width = box.width;
