@@ -21,7 +21,9 @@ export default class LineChartView {
 
 		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: '#fff' });
 		this.background.addEventListener('mousemove', this.onHover.bind(this));
+		this.background.addEventListener('touchstast', this.onHover.bind(this));
 		this.background.addEventListener('mouseleave', () => this.popup.hide());
+		this.background.addEventListener('touchend', () => this.popup.hide());
 
 		this.popup = new Popup(chart, y, height);
 	}

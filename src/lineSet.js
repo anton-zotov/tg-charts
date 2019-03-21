@@ -60,4 +60,8 @@ export default class LineSet {
 			return [line, line.getPointAtCoord(x)];
 		})
 	}
+
+	isOpacityStable() {
+		return this.lines.every(line => line.opacity === line.targetOpacity);
+	}
 }

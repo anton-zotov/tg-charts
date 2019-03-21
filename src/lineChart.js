@@ -2,18 +2,21 @@ import LineChartView from "./lineChartView";
 import Preview from "./preview";
 import { minDt, lightTheme } from "./config";
 import { getDefs, appendDefs } from "./defs";
-import { dc } from "./functions";
+import { dc, average } from "./functions";
 
 export default class LineChart {
-	constructor(parent, width, height, data) {
+	constructor(parent, width, height, data, options) {
 		this.parent = parent;
 		this.width = width;
 		this.height = height;
 		this.data = data;
+		this.options = options;
 		this.drawables = [];
 		this.prevAnimationTimestamp = 0;
 		this.isViewDirty = true;
 		this.theme = lightTheme;
+		this.animateTimes = [];
+		this.fpsPool = [];
 		this.appendFPS();
 		this.appendSvg();
 		appendDefs(this.svg);
@@ -73,6 +76,8 @@ export default class LineChart {
 	}
 
 	animate(timestamp) {
+		this.animateFrame = this.animateFrame || 0;
+		let startT = performance.now();
 		let dt = (timestamp - this.prevAnimationTimestamp) / 1000;
 		if (minDt > dt) return window.requestAnimationFrame(this.animate.bind(this));
 		if (this.isViewDirty) {
@@ -82,5 +87,16 @@ export default class LineChart {
 		this.drawables.forEach(drawable => drawable.onDraw(dt));
 		this.prevAnimationTimestamp = timestamp;
 		window.requestAnimationFrame(this.animate.bind(this));
+
+		const poolSize = 20;
+		let animateTime = Math.round((performance.now() - startT) * 1000);
+		if (this.animateTimes.length >= poolSize) this.animateTimes.shift();
+		this.animateTimes.push(animateTime);
+		if (this.fpsPool.length >= poolSize) this.fpsPool.shift();
+		this.fpsPool.push(Math.round(1 / dt));
+		if (this.animateFrame % poolSize === 0) {
+			this.fps.textContent = `fps: ${average(this.fpsPool)} animate time: ${average(this.animateTimes)}`;
+		}
+		this.animateFrame++;
 	}
 }

@@ -4,9 +4,11 @@
 }
 html, body {
 	height: 100%;
+	overflow-x: hidden;
 }
 svg {
 	user-select: none; 
+	margin-bottom: 20px;
 }
 .bh {
 	padding-top: 10px;

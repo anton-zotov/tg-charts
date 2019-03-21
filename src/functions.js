@@ -74,3 +74,5 @@ export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
 }
 
 export const dc = document.createElement.bind(document);
+
+export const average = arr => Math.round(arr.reduce( ( p, c ) => p + c, 0 ) / arr.length);

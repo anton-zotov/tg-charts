@@ -1,6 +1,13 @@
 import { addElement, moveLineX, approachTarget } from "./functions";
 import LineSet from "./lineSet";
 import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime } from "./config";
+import Cache from "./cache";
+
+const lineSetMock = {
+	getHighestPoint: () => 50,
+	toggleLine: () => { },
+	redraw: () => { },
+}
 
 export default class Preview {
 	constructor(chart, y, height, data) {
@@ -15,6 +22,10 @@ export default class Preview {
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
+		this.cache = new Cache(this.chart.width, height, y);
+		this.foreignObject = addElement(chart.svg, 'foreignObject', { x: 0, y, width: this.chart.width, height });
+		this.canvasHolder = addElement(this.foreignObject, 'xhtml:body');
+		this.cacheImage = addElement(chart.svg, 'image', { x: 0, y, width: this.chart.width, height, visibility: 'hidden' });
 
 		this.viewboxRect = addElement(chart.svg, 'rect',
 			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y });
@@ -29,15 +40,15 @@ export default class Preview {
 		this.rightViewboxAdditionalBorder = addElement(chart.svg, 'rect',
 			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
 
-		let color = '#bbb';
+		let color = 'rgba(200,200,200,0.7)';
 		this.topViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y, y2: this.y });
+			{ stroke: color, y1: this.y, y2: this.y });
 		this.bottomViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-opacity': '0.7', y1: this.y + this.height, y2: this.y + this.height });
+			{ stroke: color, y1: this.y + this.height, y2: this.y + this.height });
 		this.leftViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
+			{ stroke: color, 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
 		this.rightViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-opacity': '0.7', 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
+			{ stroke: color, 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
 
 		this.viewboxRect.onmousedown = this.onViewboxClick.bind(this);
 		this.viewboxRect.addEventListener('touchstart', (e) => this.onViewboxClick(e.touches[0]));
@@ -57,6 +68,7 @@ export default class Preview {
 
 		this.positionViewbox();
 		this.chart.drawables.push(this);
+		this.cachePreview();
 	}
 
 	onMouseMove(e) {
@@ -162,10 +174,39 @@ export default class Preview {
 
 	onDraw(dt) {
 		if (this.highestPoint !== this.targetHighestPoint) {
-			console.log('preview redraw');
+			this.restorePreview();
 			approachTarget(this, 'highestPoint', this.targetHighestPoint, this.highestPointChangeSpeed, dt);
 			this.lineSet.highestPoint = this.highestPoint;
 			this.lineSet.redraw();
+		} if (!this.lineSet.isOpacityStable()) {
+			this.restorePreview();
+		} else {
+			this.cachePreview();
 		}
+	}
+
+	cachePreview() {
+		if (!this.chart.options.cachePreview) return;
+		if (this.previewCached) return;
+		this.previewCached = true;
+		this.cache.cacheElements(...this.lineSet.lines.map(line => line.path))
+			.then(() => {
+				this.cacheImage.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', this.cache.canvas.toDataURL());
+				this.cacheImage.setAttribute('visibility', 'visible');
+				for (let line of this.lineSet.lines) {
+					line.path.remove();
+				}
+			});
+		// this.foreignObject.appendChild(this.cache.canvas);
+	}
+
+	restorePreview() {
+		if (!this.chart.options.cachePreview) return;
+		if (!this.previewCached) return;
+		for (let line of this.lineSet.lines) {
+			this.chart.svg.insertBefore(line.path, this.chart.svg.firstChild);
+		}
+		this.cacheImage.setAttribute('visibility', 'hidden');
+		this.previewCached = false;
 	}
 }

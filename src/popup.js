@@ -75,12 +75,12 @@ export class Popup {
 		this.line.setAttribute('visibility', 'visible');
 		this.box.setAttribute('visibility', 'visible');
 		this.hidden = false;
-		this.chart.svg.removeChild(this.box);
+		// this.chart.svg.removeChild(this.box);
 		// this.chart.svg.appendChild(this.box);
 	}
 
 	hide() {
-		if (this.hidden || 1) return;
+		if (this.hidden) return;
 		this.line.setAttribute('visibility', 'hidden');
 		this.box.setAttribute('visibility', 'hidden');
 		this.hidden = true;
