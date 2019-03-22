@@ -15,11 +15,12 @@ function start() {
 	// createChart(document.body, data[0]);
 	// createChart(document.body, data[1]);
 	// createChart(document.body, data[2]);
-	createChart(document.body, data[3]);
-	createChart(document.body, data[3], { cachePreview: true });
-	createChart(document.body, data[4]);
+
+	// createChart(document.body, data[3]);
+	// createChart(document.body, data[3], { cachePreview: true });
+	// createChart(document.body, data[4]);
 	createChart(document.body, data[4], { cachePreview: true });
-	createChart(document.body, data[5]);
+	// createChart(document.body, data[5]);
 }
 
 window.addEventListener('load', start);

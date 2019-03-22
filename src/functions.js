@@ -24,9 +24,16 @@ export function addPath(svg, coords, attributes = {}) {
 	});
 }
 
-export function moveLineX(line, x1, x2) {
-	line.setAttribute('x1', x1);
-	line.setAttribute('x2', x2);
+export function translate(line, x, y = 0) {
+	line.setAttribute('transform', `translate(${x}, ${y})`);
+}
+
+export function scale(line, x, y = 1) {
+	line.setAttribute('transform', `scale(${x}, ${y})`);
+}
+
+export function translateScale(el, tx, sx, ty = 0, sy = 1) {
+	return el.setAttribute('transform', `translate(${tx}, ${ty}) scale(${sx} ${sy})`);
 }
 
 export function moveLineY(line, y1, y2) {
@@ -44,7 +51,7 @@ let ticksCache = {};
 let prevMax = -100;
 let prevTicks = [1, 2, 3, 4, 5];
 export function getAxisTicks(max) {
-	if (prevMax * 0.95 <= max && prevMax *1.05 >= max) return prevTicks;
+	if (prevMax * 0.95 <= max && prevMax * 1.05 >= max) return prevTicks;
 	if (!ticksCache[max]) {
 		const gridN = 5;
 		let step = Math.floor(max * 0.95 / gridN);

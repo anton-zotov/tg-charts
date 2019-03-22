@@ -86,7 +86,6 @@ export default class LineChart {
 		}
 		this.drawables.forEach(drawable => drawable.onDraw(dt));
 		this.prevAnimationTimestamp = timestamp;
-		window.requestAnimationFrame(this.animate.bind(this));
 
 		const poolSize = 20;
 		let animateTime = Math.round((performance.now() - startT) * 1000);
@@ -98,5 +97,7 @@ export default class LineChart {
 			this.fps.textContent = `fps: ${average(this.fpsPool)} animate time: ${average(this.animateTimes)}`;
 		}
 		this.animateFrame++;
+
+		window.requestAnimationFrame(this.animate.bind(this));
 	}
 }

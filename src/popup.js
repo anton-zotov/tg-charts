@@ -1,4 +1,4 @@
-import { moveLineX, addElement, formatDate, getDayOfWeek } from "./functions";
+import { translate, addElement, formatDate, getDayOfWeek } from "./functions";
 import { fontFamily, popupConfig } from "./config";
 import { fs, bold } from "./font";
 
@@ -16,7 +16,7 @@ export class Popup {
 		this.border = addElement(this.box, 'rect', {
 			x: 0, y: 0, width: 150, height: popupConfig.height,
 			rx: 7, ry: 7,
-			fill: this.chart.theme.background, style: 'filter:url(#shadow)'
+			fill: this.chart.theme.background
 		});
 		this.label = addElement(this.box, 'text', { 
 			x: popupConfig.padding.left, y: popupConfig.padding.top, 
@@ -36,7 +36,7 @@ export class Popup {
 			this.label.textContent = labelText;
 			let width = Math.max(popupConfig.minWidth, this.setDetailTexts(points, i));
 			this.border.setAttribute('width', width);
-			moveLineX(this.line, x, x);
+			translate(this.line, x);
 			this.box.setAttribute('transform', `translate(${x - width / 2}, 80)`);
 			this.chart.svg.appendChild(this.box);
 		}

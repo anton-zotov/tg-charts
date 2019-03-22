@@ -1,4 +1,4 @@
-import { addElement, moveLineX, approachTarget } from "./functions";
+import { addElement, translate, approachTarget, translateScale, scale } from "./functions";
 import LineSet from "./lineSet";
 import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime } from "./config";
 import Cache from "./cache";
@@ -9,6 +9,9 @@ const lineSetMock = {
 	redraw: () => { },
 }
 
+const defaultViewboxWidth = 100;
+const getScale = x => x / defaultViewboxWidth;
+
 export default class Preview {
 	constructor(chart, y, height, data) {
 		this.chart = chart;
@@ -17,48 +20,47 @@ export default class Preview {
 		this.lineSet = new LineSet(chart, y, height, 3, data);
 		this.viewboxStart = defaultViewboxStart;
 		this.viewboxEnd = defaultViewboxEnd;
-		this.widthChanged = this.shadowWidthChanged = true;
+		this.widthChanged = true;
 		this.viewboxStartPx = chart.width * this.viewboxStart;
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
 		this.cache = new Cache(this.chart.width, height, y);
-		this.foreignObject = addElement(chart.svg, 'foreignObject', { x: 0, y, width: this.chart.width, height });
-		this.canvasHolder = addElement(this.foreignObject, 'xhtml:body');
 		this.cacheImage = addElement(chart.svg, 'image', { x: 0, y, width: this.chart.width, height, visibility: 'hidden' });
-
-		this.viewboxRect = addElement(chart.svg, 'rect',
-			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y });
-
-		this.leftShadow = addElement(chart.svg, 'rect',
-			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
-		this.rightShadow = addElement(chart.svg, 'rect',
-			{ fill: '#ddd', 'fill-opacity': '0.7', height: this.height, y: this.y });
-
-		this.leftViewboxAdditionalBorder = addElement(chart.svg, 'rect',
-			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
-		this.rightViewboxAdditionalBorder = addElement(chart.svg, 'rect',
-			{ fill: 'none', 'pointer-events': 'visible', height: this.height, y: this.y, width: 35 });
+		this.group = addElement(chart.svg, 'g', { x: 0, y: this.y });
+		this.middleGroup = addElement(this.group, 'g', { x: 0, y: this.y });
+		this.rightGroup = addElement(this.group, 'g', { x: defaultViewboxWidth, y: this.y });
 
 		let color = 'rgba(200,200,200,0.7)';
-		this.topViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, y1: this.y, y2: this.y });
-		this.bottomViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, y1: this.y + this.height, y2: this.y + this.height });
-		this.leftViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
-		this.rightViewboxBorder = addElement(chart.svg, 'line',
-			{ stroke: color, 'stroke-width': 10, y1: this.y, y2: this.y + this.height });
+		// left group
+		this.leftShadow = addElement(this.group, 'rect',
+			{ fill: '#ddd', 'fill-opacity': '0.7', x: -this.chart.width, width: this.chart.width, height: this.height, y: 0 });
+		this.leftViewboxBorder = addElement(this.group, 'rect',
+			{ fill: color, x: 0, width: 10, y: 0, height: this.height });
+
+		// middle group
+		this.viewboxRect = addElement(this.middleGroup, 'rect',
+			{ fill: 'none', 'pointer-events': 'visible', x: 0, width: defaultViewboxWidth, height: this.height, y: 0 });
+		this.topViewboxBorder = addElement(this.middleGroup, 'line',
+			{ stroke: color, 'stroke-width': 1, x1: 0, x2: defaultViewboxWidth, y1: 0, y2: 0 });
+		this.bottomViewboxBorder = addElement(this.middleGroup, 'line',
+			{ stroke: color, 'stroke-width': 1, x1: 0, x2: defaultViewboxWidth, y1: this.height, y2: this.height });
+
+		// right group
+		this.rightShadow = addElement(this.rightGroup, 'rect',
+			{ fill: '#ddd', 'fill-opacity': '0.7', x: 0, width: this.chart.width, height: this.height, y: 0 });
+		this.rightViewboxBorder = addElement(this.rightGroup, 'rect',
+			{ fill: color, x: -10, width: 10, y: 0, height: this.height });
 
 		this.viewboxRect.onmousedown = this.onViewboxClick.bind(this);
 		this.viewboxRect.addEventListener('touchstart', (e) => this.onViewboxClick(e.touches[0]));
 
 		this.leftViewboxBorder.onmousedown = this.onLeftHandleClick.bind(this);
 		this.leftViewboxBorder.addEventListener('touchstart', (e) => this.onLeftHandleClick(e.touches[0]));
-		this.leftViewboxAdditionalBorder.addEventListener('touchstart', (e) => this.onLeftHandleClick(e.touches[0]));
+		this.leftShadow.addEventListener('touchstart', (e) => this.onLeftHandleClick(e.touches[0]));
 		this.rightViewboxBorder.onmousedown = this.onRightHandleClick.bind(this);
 		this.rightViewboxBorder.addEventListener('touchstart', (e) => this.onRightHandleClick(e.touches[0]));
-		this.rightViewboxAdditionalBorder.addEventListener('touchstart', (e) => this.onRightHandleClick(e.touches[0]));
+		this.rightShadow.addEventListener('touchstart', (e) => this.onRightHandleClick(e.touches[0]));
 
 		document.addEventListener('mousemove', this.onMouseMove.bind(this));
 		document.addEventListener('touchmove', (e) => this.onMouseMove(e.touches[0]));
@@ -127,7 +129,6 @@ export default class Preview {
 			}
 		}
 		this.calcViewboxPercentage();
-		this.shadowWidthChanged = true;
 		this.positionViewbox();
 		this.dragStartX = pageX;
 	}
@@ -141,23 +142,14 @@ export default class Preview {
 	positionViewbox() {
 		let left = this.viewboxStartPx;
 		let right = this.viewboxEndPx;
-		moveLineX(this.topViewboxBorder, left, right);
-		moveLineX(this.bottomViewboxBorder, left, right);
-		moveLineX(this.leftViewboxBorder, left, left);
-		moveLineX(this.rightViewboxBorder, right, right);
-		let rects = [
-			[this.viewboxRect, left, right - left, this.widthChanged],
-			[this.leftShadow, 0, Math.max(left - 5, 0), this.shadowWidthChanged || this.widthChanged],
-			[this.rightShadow, right + 5, this.chart.width - right, this.shadowWidthChanged || this.widthChanged],
-			[this.leftViewboxAdditionalBorder, left - 40, 0, false],
-			[this.rightViewboxAdditionalBorder, right + 5, 0, false],
-		];
-		rects.forEach(([rect, x, width, widthChanged]) => {
-			rect.setAttribute('x', x);
-			if (widthChanged) rect.setAttribute('width', width);
-		});
+		let width = right - left;
+		let scaleX = getScale(width);
+		if (this.widthChanged) {
+			scale(this.middleGroup, scaleX);
+			translate(this.rightGroup, width);
+		}
+		translate(this.group, left, this.y);
 		this.widthChanged = false;
-		this.shadowWidthChanged = false;
 	}
 
 	toggleLine(lineName) {
@@ -198,7 +190,6 @@ export default class Preview {
 					line.path.remove();
 				}
 			});
-		// this.foreignObject.appendChild(this.cache.canvas);
 	}
 
 	restorePreview() {

@@ -22,7 +22,7 @@ export default class Line {
 
 	getHighestPoint() {
 		let [firstIndex, endIndex] = this.getShownIndexes();
-		// return Math.max(...this.ys);
+		return Math.max(...this.ys);
 		return Math.max(...this.ys.slice(firstIndex, endIndex));
 	}
 

@@ -31,7 +31,7 @@ export default class Cache {
 		return new Promise(resolve => {
 			this.svgImage.onload = () => {
 				let ctx = this.canvas.getContext('2d');
-				ctx.fillStyle = 'white';
+				ctx.fillStyle = '#fff';
 				ctx.fillRect(0, 0, this.width, this.height);
 				ctx.drawImage(this.svgImage, 0, 0);
 				resolve();
