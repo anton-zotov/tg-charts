@@ -41,14 +41,25 @@ export function updateText(text, x, y, t = null) {
 }
 
 let ticksCache = {};
+let prevMax = -100;
+let prevTicks = [1, 2, 3, 4, 5];
 export function getAxisTicks(max) {
+	if (prevMax * 0.95 <= max && prevMax *1.05 >= max) return prevTicks;
 	if (!ticksCache[max]) {
 		const gridN = 5;
 		let step = Math.floor(max * 0.95 / gridN);
 		let ticks = Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
 		ticksCache[max] = ticks;
 	}
-	return ticksCache[max];
+	prevMax = max;
+	prevTicks = ticksCache[max];
+	return prevTicks;
+}
+
+export function ticksAreEqual(t1, t2) {
+	let t1l = t1.length;
+	let t2l = t2.length;
+	return t1l && t2l && t1l === t2l && t1[t1l - 1] === t2[t2l - 1];
 }
 
 let months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -75,4 +86,4 @@ export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
 
 export const dc = document.createElement.bind(document);
 
-export const average = arr => Math.round(arr.reduce( ( p, c ) => p + c, 0 ) / arr.length);
+export const average = arr => Math.round(arr.reduce((p, c) => p + c, 0) / arr.length);

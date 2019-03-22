@@ -1,4 +1,4 @@
-import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget } from "./functions";
+import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget, ticksAreEqual } from "./functions";
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
@@ -18,6 +18,7 @@ export default class LineChartView {
 		this.xTickWidth = 0;
 		this.xTickY = this.y + this.height + 26;
 		this.highestPointChangeSpeed = 0;
+		this.tickNumbers = [];
 
 		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: '#fff' });
 		this.background.addEventListener('mousemove', this.onHover.bind(this));
@@ -48,8 +49,16 @@ export default class LineChartView {
 	}
 
 	createYAxes(initial = false) {
-		let tickNumbers = getAxisTicks(this.targetHighestPoint);
-		tickNumbers.forEach(tickN => {
+		let newTickNumbers = getAxisTicks(this.targetHighestPoint);
+		if (!initial && ticksAreEqual(this.tickNumbers, newTickNumbers)) {
+			this.tickNumbers = newTickNumbers;
+			return;	
+		}
+		this.tickNumbers = newTickNumbers;
+		if (!initial) {
+			this.yAxes.forEach(yAxis => yAxis.hide());
+		}
+		newTickNumbers.forEach(tickN => {
 			let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
 			if (!initial) yAxis.show();
 			this.yAxes.push(yAxis);
@@ -104,7 +113,6 @@ export default class LineChartView {
 		let hp = this.targetHighestPoint;
 		this.targetHighestPoint = this.lineSet.getHighestPoint();
 		if (hp !== this.targetHighestPoint) {
-			this.yAxes.forEach(yAxis => yAxis.hide());
 			this.createYAxes();
 			this.highestPointChangeSpeed = Math.abs(this.targetHighestPoint - this.highestPoint) / lineMoveAnimationTime;
 		}

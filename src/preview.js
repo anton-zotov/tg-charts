@@ -98,8 +98,8 @@ export default class Preview {
 	onLeftHandleMove(pageX) {
 		this.viewboxStartPx = Math.max(0, this.viewboxStartPx + pageX - this.leftHandleDragStartX);
 		this.viewboxStartPx = Math.min(this.viewboxStartPx, this.viewboxEndPx - minViewboxWidthPx);
-		this.calcViewboxPercentage();
 		this.widthChanged = true;
+		this.calcViewboxPercentage();
 		this.positionViewbox();
 		this.leftHandleDragStartX = pageX;
 	}
@@ -107,8 +107,8 @@ export default class Preview {
 	onRightHandleMove(pageX) {
 		this.viewboxEndPx = Math.min(this.chart.width, this.viewboxEndPx + pageX - this.rightHandleDragStartX);
 		this.viewboxEndPx = Math.max(this.viewboxStartPx + minViewboxWidthPx, this.viewboxEndPx);
-		this.calcViewboxPercentage();
 		this.widthChanged = true;
+		this.calcViewboxPercentage();
 		this.positionViewbox();
 		this.rightHandleDragStartX = pageX;
 	}
@@ -135,7 +135,7 @@ export default class Preview {
 	calcViewboxPercentage() {
 		this.viewboxStart = this.viewboxStartPx / this.chart.width;
 		this.viewboxEnd = this.viewboxEndPx / this.chart.width;
-		this.onChange();
+		this.onChange(!this.widthChanged);
 	}
 
 	positionViewbox() {
@@ -157,6 +157,7 @@ export default class Preview {
 			if (widthChanged) rect.setAttribute('width', width);
 		});
 		this.widthChanged = false;
+		this.shadowWidthChanged = false;
 	}
 
 	toggleLine(lineName) {

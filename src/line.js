@@ -22,7 +22,7 @@ export default class Line {
 
 	getHighestPoint() {
 		let [firstIndex, endIndex] = this.getShownIndexes();
-		return Math.max(...this.ys);
+		// return Math.max(...this.ys);
 		return Math.max(...this.ys.slice(firstIndex, endIndex));
 	}
 
@@ -97,5 +97,9 @@ export default class Line {
 			approachTarget(this, 'opacity', this.targetOpacity, lineOpacityPerSecond, dt);
 			this.path.setAttribute('stroke-opacity', this.opacity);
 		}
+	}
+
+	move(x) {
+		this.path.setAttribute('transform', `translate(${x}, 0)`);
 	}
 }
