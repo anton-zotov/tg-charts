@@ -25,8 +25,7 @@ export default class Preview {
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
-		this.cache = new Cache(this.chart.width, height, y);
-		this.cacheImage = addElement(chart.svg, 'image', { x: 0, y, width: this.chart.width, height, visibility: 'hidden' });
+		this.cache = new Cache(0, y, this.chart.width, height, this.lineSet.lines.map(line => line.path));
 		this.group = addElement(chart.svg, 'g', { x: 0, y: this.y });
 		this.middleGroup = addElement(this.group, 'g', { x: 0, y: this.y });
 		this.rightGroup = addElement(this.group, 'g', { x: defaultViewboxWidth, y: this.y });
@@ -180,25 +179,11 @@ export default class Preview {
 
 	cachePreview() {
 		if (!this.chart.options.cachePreview) return;
-		if (this.previewCached) return;
-		this.previewCached = true;
-		this.cache.cacheElements(...this.lineSet.lines.map(line => line.path))
-			.then(() => {
-				this.cacheImage.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', this.cache.canvas.toDataURL());
-				this.cacheImage.setAttribute('visibility', 'visible');
-				for (let line of this.lineSet.lines) {
-					line.path.remove();
-				}
-			});
+		this.cache.show();
 	}
 
 	restorePreview() {
 		if (!this.chart.options.cachePreview) return;
-		if (!this.previewCached) return;
-		for (let line of this.lineSet.lines) {
-			this.chart.svg.insertBefore(line.path, this.chart.svg.firstChild);
-		}
-		this.cacheImage.setAttribute('visibility', 'hidden');
-		this.previewCached = false;
+		this.cache.hide();
 	}
 }
