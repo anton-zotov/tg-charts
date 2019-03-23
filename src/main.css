@@ -11,24 +11,43 @@ html, body {
 body.dark-theme {
 	background-color: #242F3E;
 }
+h1 {
+	font-size: 38px;
+	padding-left: 30px;
+	padding-bottom: 5px;
+}
+body.dark-theme h1 {
+	color: white;
+}
 svg {
 	user-select: none; 
-	margin-bottom: 20px;
+	margin: 20px;
+}
+.chart {
+	margin: 30px 0;
+}
+.chart:last-child {
+	margin-bottom: 120px;
 }
 .bh {
 	padding-top: 10px;
 	padding-left: 10px;
+	margin-bottom: 60px;
 }
 .bh button,
 .bh button:focus,
 .bh button:active {
 	padding: 10px 20px 10px 10px;
-	background-color: white;
+	background: none;
 	border: 1px solid #ccc;
 	border-radius: 50px;
 	font-size: 16px;
 	outline:none;
 	margin-right: 10px;
+}
+body.dark-theme .bh button {
+	color: white;
+	border-color: #344658
 }
 /* .bh button.c {
 	background-color: #73c03a;
@@ -36,6 +55,8 @@ svg {
 } */
 .fps {
 	font-size: 24px;
+	float: right;
+    padding-right: 30px;
 }
 .dark-theme .fps {
 	color: white;
@@ -64,7 +85,7 @@ svg {
     transform: rotate(45deg);
 }
 
-@keyframes scale-up {
+@keyframes t-scale-up {
     0% {
         transform: translate(-50%, -50%) scale(0);
     }
@@ -72,12 +93,28 @@ svg {
         transform: translate(-50%, -50%) scale(1);
     }
 }
-@keyframes scale-down {
+@keyframes t-scale-down {
     0% {
         transform: translate(-50%, -50%) scale(1);
     }
     100% {
         transform: translate(-50%, -50%) scale(0);
+    }
+}
+@keyframes r-scale-up {
+    0% {
+        transform: rotate(45deg) scale(0);
+    }
+    100% {
+        transform: rotate(45deg) scale(1);
+    }
+}
+@keyframes r-scale-down {
+    0% {
+        transform: rotate(45deg) scale(1);
+    }
+    100% {
+        transform: rotate(45deg) scale(0);
     }
 }
 .line-toggle {
@@ -108,27 +145,39 @@ svg {
 	width:20px;
     height:20px;
 }
+.dark-theme .blank-circle {
+	background-color: #242F3E;
+}
 .line-toggle .blank-circle{
 	transform: translate(-50%, -50%) scale(0);
-	animation: scale-down 0.3s;
+	animation: t-scale-down 0.3s;
 }
 .line-toggle.c .blank-circle{
-	animation: scale-up 0.3s;
 	transform: translate(-50%, -50%) scale(1);
+	animation: t-scale-up 0.3s;
 }
+.line-toggle .checkmark{
+	transform: rotate(45deg) scale(1);
+	animation: r-scale-up 0.3s;
+}
+.line-toggle.c .checkmark{
+	animation: r-scale-down 0.3s;
+	transform: rotate(45deg) scale(0);
+}
+
 .checkmark_stem {
     position: absolute;
     width:2px;
     height:11px;
     background-color:#fff;
-    left:12px;
-    top:4px;
+    left:13px;
+    top:5px;
 }
 .checkmark_kick {
     position: absolute;
     width:6px;
     height:2px;
     background-color:#fff;
-    left:8px;
-    top:13px;
+	left: 9px;
+    top: 14px;
 }

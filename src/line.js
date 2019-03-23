@@ -2,13 +2,14 @@ import { addPath, makeD, approachTarget } from "./functions";
 import { yAxisOpacityPerSecond, lineOpacityPerSecond } from "./config";
 
 export default class Line {
-	constructor(chart, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd) {
+	constructor(chart, parent, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd) {
 		this.chart = chart;
 		this.name = name;
 		this.label = label;
 		this.ys = ys;
 		this.color = color;
 		this.width = width;
+		this.parent = parent;
 		this.y = y;
 		this.yCoeff = yCoeff;
 		this.shownPartStart = shownPartStart;
@@ -59,7 +60,7 @@ export default class Line {
 	}
 
 	create() {
-		this.path = addPath(this.chart.svg, this.getPoints(), {
+		this.path = addPath(this.parent, this.getPoints(), {
 			stroke: this.color,
 			'stroke-width': this.width,
 			'stroke-linejoin': 'round',

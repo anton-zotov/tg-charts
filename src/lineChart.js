@@ -18,7 +18,8 @@ const toggleButtonTemplate = (label) => `<button class="line-toggle">
 
 export default class LineChart {
 	constructor(parent, width, height, data, options) {
-		this.parent = parent;
+		this.parent = parent.appendChild(dc('div'));
+		this.parent.classList.add('chart');
 		this.width = width;
 		this.height = height;
 		this.data = data;
@@ -30,12 +31,13 @@ export default class LineChart {
 		this.animateTimes = [];
 		this.fpsPool = [];
 		this.appendFPS();
+		this.appendTitle();
 		this.appendSvg();
-		appendDefs(this.svg);
+		// appendDefs(this.svg);
 		this.appendButtons();
 
-		let previewHeight = Math.round(this.height / 8);
-		this.view = new LineChartView(this, 50, this.height - previewHeight * 2);
+		let previewHeight = Math.round(this.height / 10);
+		this.view = new LineChartView(this, 10, this.height - previewHeight - 90);
 		this.view.createLines(data);
 		this.preview = new Preview(this, this.height - previewHeight, previewHeight, data);
 		this.preview.onChange = () => this.isViewDirty = true;
@@ -78,6 +80,12 @@ export default class LineChart {
 		this.fps = document.createElement('div');
 		this.fps.classList.add('fps')
 		this.parent.appendChild(this.fps);
+	}
+	
+	appendTitle() {
+		this.title = document.createElement('h1');
+		this.title.textContent = 'Followers';
+		this.parent.appendChild(this.title);
 	}
 
 	addElement(tagName, attributes = {}) {
@@ -123,6 +131,7 @@ export default class LineChart {
 	}
 
 	updateTheme() {
+		this.view.updateTheme();
 		this.preview.updateTheme();
 	}
 }

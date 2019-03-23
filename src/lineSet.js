@@ -1,5 +1,5 @@
 import Line from "./line";
-import { approachTarget } from "./functions";
+import { approachTarget, addElement } from "./functions";
 import { lineMoveAnimationTime } from "./config";
 
 export default class LineSet {
@@ -7,6 +7,7 @@ export default class LineSet {
 		this.lines = [];
 		this.height = height;
 		this.chart = chart;
+		this.mainGroup = addElement(chart.svg, 'g');
 		let columns = data.columns.slice(1);
 		let maxY = 0;
 		for (let column of columns) {
@@ -15,11 +16,13 @@ export default class LineSet {
 		let yCoeff = maxY ? (height / maxY) : 0;
 		for (let column of columns) {
 			let [name, ...ys] = column;
-			this.lines.push(new Line(chart, y + height, yCoeff, name, data.names[name], ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd));
+			this.lines.push(new Line(chart, this.mainGroup, y + height, yCoeff, name, data.names[name], ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd));
 		}
 		this.highestPoint = maxY;
 		this.targetHighestPoint = maxY;
 		this.yAxesMoveSpeed = 0;
+		this.highestPoint = this.getHighestPoint();
+		this.redraw();
 		// this.chart.drawables.push(this);
 	}
 
@@ -63,5 +66,9 @@ export default class LineSet {
 
 	isOpacityStable() {
 		return this.lines.every(line => line.opacity === line.targetOpacity);
+	}
+
+	clip(id) {
+		this.mainGroup.setAttribute('clip-path', `url(#${id})`);
 	}
 }

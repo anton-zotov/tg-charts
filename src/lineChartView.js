@@ -2,7 +2,7 @@ import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget, ti
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
-import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd } from "./config";
+import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd, lineWidth } from "./config";
 import { Popup } from "./popup";
 import YAxisSet from "./yAxisSet";
 
@@ -22,32 +22,44 @@ export default class LineChartView {
 		this.highestPointChangeSpeed = 0;
 		this.tickNumbers = [];
 
+		this.popup = new Popup(chart, y, height);
+
 		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: 'none', 'pointer-events': 'all' });
 		this.background.addEventListener('mousemove', this.onHover.bind(this));
-		this.background.addEventListener('touchstart', this.onHover.bind(this));
-		this.background.addEventListener('mouseleave', () => this.popup.hide());
-		this.background.addEventListener('touchend', () => this.popup.hide());
+		this.background.addEventListener('touchstart', this.onTouch.bind(this));
+		this.background.addEventListener('touchmove', this.onTouch.bind(this));
+		this.background.addEventListener('mouseleave', this.hidePopup.bind(this));
+		this.background.addEventListener('touchend', this.hidePopup.bind(this));
 
-		this.popup = new Popup(chart, y, height);
+	}
+
+	onTouch(e) {
+		this.showPopup(e.touches[0].pageX);
 	}
 
 	onHover(e) {
-		let points = this.lineSet.getPointsAtCoord(e.pageX);
-		this.showPopup(points);
+		this.showPopup(e.pageX);
 	}
 
-	showPopup(points) {
+	showPopup(x) {
+		let points = this.lineSet.getPointsAtCoord(x);
 		if (!points.length) return;
 		this.popup.move(points);
 	}
 
+	hidePopup() {
+		this.popup.hide()
+	}
+
 	createLines(data) {
 		this.xs = data.columns[0].slice(1);
-		this.lineSet = new LineSet(this.chart, this.y, this.height, 6, data, defaultViewboxStart, defaultViewboxEnd);
+		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd);
+		this.chart.svg.appendChild(this.background);
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.createYAxes(true);
 		this.createXTicks();
 		this.chart.drawables.push(this);
+		this.popup.bringToFront();
 	}
 
 	createYAxes(initial = false) {
@@ -67,7 +79,7 @@ export default class LineChartView {
 		// 	let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
 		// 	if (!initial) yAxis.show();
 		// 	this.yAxes.push(yAxis);
-			
+
 		// });
 		let set = new YAxisSet(this, newTickNumbers);
 		if (!initial) set.show();
@@ -145,5 +157,9 @@ export default class LineChartView {
 	toggleLine(lineName) {
 		this.lineSet.toggleLine(lineName);
 		this.onHpChange();
+	}
+
+	updateTheme() {
+		this.popup.updateTheme();
 	}
 }

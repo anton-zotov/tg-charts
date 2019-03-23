@@ -26,6 +26,13 @@ export default class Preview {
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
 		this.cache = new Cache(chart, 0, y, this.chart.width, height, this.lineSet.lines.map(line => line.path));
+
+		this.clipPath = addElement(chart.svg, 'clipPath', { id: 'previewClip' });
+		this.clipPathRect = addElement(this.clipPath, 'rect', {
+			x: 0, y, width: this.chart.width, height
+		});
+		this.lineSet.clip('previewClip');
+
 		this.group = addElement(chart.svg, 'g', { x: 0, y: this.y });
 		this.middleGroup = addElement(this.group, 'g', { x: 0, y: this.y });
 		this.rightGroup = addElement(this.group, 'g', { x: defaultViewboxWidth, y: this.y });

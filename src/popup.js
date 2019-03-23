@@ -10,22 +10,26 @@ export class Popup {
 		this.x = -1;
 		this.height = height;
 		this.hidden = true;
-		this.mainGroup = addElement(this.chart.svg, 'g', {visibility: 'hidden'}, true);
-		this.box = addElement(this.mainGroup, 'g', {}, true);
-		this.lineGroup = addElement(this.mainGroup, 'g', {}, true);
-		this.line = addElement(this.lineGroup, 'line', { x1: 0, x2: 0, y1: y + popupConfig.height / 2, y2: height + popupConfig.height / 2, stroke: '#c0c', 'stroke-width': 1 }, true);
+		this.mainGroup = addElement(this.chart.svg, 'g', { visibility: 'hidden' });
+		this.lineGroup = addElement(this.mainGroup, 'g', {},);
+		this.line = addElement(this.lineGroup, 'line', { x1: 0, x2: 0, y1: y, y2: height + 10, stroke: '#c0c', 'stroke-width': 1 });
+		this.box = addElement(this.mainGroup, 'g', {});
 		this.border = addElement(this.box, 'rect', {
 			x: 0, y: 0, width: 150, height: popupConfig.height,
-			rx: 7, ry: 7,
+			rx: popupConfig.borderRadius, ry: popupConfig.borderRadius,
 			stroke: '#ccc',
 			fill: this.chart.theme.background
 		});
 		this.label = addElement(this.box, 'text', {
 			x: popupConfig.padding.left, y: popupConfig.padding.top,
-			...fontFamily, ...fs(header.fontSize)
+			...fontFamily, ...fs(header.fontSize),
 		});
 		this.detailTexts = [];
 		this.lineCircles = [];
+	}
+
+	bringToFront() {
+		this.chart.svg.appendChild(this.mainGroup);
 	}
 
 	move(points) {
@@ -40,7 +44,7 @@ export class Popup {
 			let width = Math.max(popupConfig.minWidth, this.setDetailTexts(points, i));
 			this.border.setAttribute('width', width);
 			translate(this.lineGroup, x);
-			this.box.setAttribute('transform', `translate(${x - width / 2}, 80)`);
+			this.box.setAttribute('transform', `translate(${x - width / 2}, ${popupConfig.y})`);
 			// this.chart.svg.appendChild(this.box);
 		}
 	}
@@ -74,7 +78,8 @@ export class Popup {
 			let circle = this.lineCircles[i];
 			if (!circle) {
 				circle = addElement(this.lineGroup, 'circle', {
-					cx: 0, cy: 0, r: popupConfig.circleRadius, stroke: line.color, 'stroke-width': '3', fill: this.chart.theme.background
+					cx: 0, cy: 0, r: popupConfig.circle.radius, stroke: line.color, 'stroke-width': popupConfig.circle.width, 
+					fill: this.chart.theme.background
 				});
 				this.lineCircles.push(circle);
 			}
@@ -100,5 +105,10 @@ export class Popup {
 	makeBoxD(width, height) {
 		let s = `M 0 0 H ${width} V ${height} H 0 V 0`;
 		return s;
+	}
+
+	updateTheme() {
+		this.border.setAttribute('fill', this.chart.theme.background);
+		this.label.setAttribute('fill', this.chart.theme.text);
 	}
 }
