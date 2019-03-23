@@ -3,7 +3,8 @@ import { addElement } from "./functions";
 const b64Start = 'data:image/svg+xml;base64,';
 
 export default class Cache {
-	constructor(x, y, width, height, elements) {
+	constructor(chart, x, y, width, height, elements) {
+		this.chart = chart;
 		this.width = width;
 		this.height = height;
 		this.elements = elements;
@@ -31,7 +32,7 @@ export default class Cache {
 
 		this.svgImage.onload = () => {
 			let ctx = this.canvas.getContext('2d');
-			ctx.fillStyle = '#ff0';
+			ctx.fillStyle = this.chart.theme.background;
 			ctx.fillRect(0, 0, this.width, this.height);
 			ctx.drawImage(this.svgImage, 0, 0);
 
@@ -51,5 +52,12 @@ export default class Cache {
 		}
 		this.cacheImage.setAttribute('visibility', 'hidden');
 		this.isCacheShown = false;
+	}
+
+	updateTheme() {
+		if (this.isCacheShown) {
+			this.isCacheShown = false;
+			this.show();
+		}
 	}
 }

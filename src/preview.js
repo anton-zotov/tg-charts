@@ -25,7 +25,7 @@ export default class Preview {
 		this.viewboxEndPx = chart.width * this.viewboxEnd;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.highestPointChangeSpeed = 0;
-		this.cache = new Cache(0, y, this.chart.width, height, this.lineSet.lines.map(line => line.path));
+		this.cache = new Cache(chart, 0, y, this.chart.width, height, this.lineSet.lines.map(line => line.path));
 		this.group = addElement(chart.svg, 'g', { x: 0, y: this.y });
 		this.middleGroup = addElement(this.group, 'g', { x: 0, y: this.y });
 		this.rightGroup = addElement(this.group, 'g', { x: defaultViewboxWidth, y: this.y });
@@ -185,5 +185,9 @@ export default class Preview {
 	restorePreview() {
 		if (!this.chart.options.cachePreview) return;
 		this.cache.hide();
+	}
+
+	updateTheme() {
+		this.cache.updateTheme();
 	}
 }

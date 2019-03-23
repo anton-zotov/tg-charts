@@ -1,10 +1,15 @@
 * {
 	margin: 0;
 	padding: 0;
+	font-family: sans-serif;
+	user-select: none;
 }
 html, body {
 	height: 100%;
 	overflow-x: hidden;
+}
+body.dark-theme {
+	background-color: #242F3E;
 }
 svg {
 	user-select: none; 
@@ -17,18 +22,113 @@ svg {
 .bh button,
 .bh button:focus,
 .bh button:active {
-	padding: 10px;
+	padding: 10px 20px 10px 10px;
 	background-color: white;
 	border: 1px solid #ccc;
-	border-radius: 16px;
+	border-radius: 50px;
 	font-size: 16px;
 	outline:none;
 	margin-right: 10px;
 }
-.bh button.c {
+/* .bh button.c {
 	background-color: #73c03a;
 	color: white;
-}
+} */
 .fps {
-	font-size: 26px;
+	font-size: 24px;
+}
+.dark-theme .fps {
+	color: white;
+}
+.toggle-theme {
+	position: fixed;
+	width: 100%;
+	left: 0;
+	bottom: 0;
+	color: #108BE3;
+	background: none;
+	border: none;
+	cursor: pointer;
+	height: 120px;
+	font-size: 40px;
+	outline: none;
+}
+
+
+.checkmark {
+    display:inline-block;
+    width: 22px;
+    height:22px;
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+}
+
+@keyframes scale-up {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+@keyframes scale-down {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0);
+    }
+}
+.line-toggle {
+	display: inline-flex;
+}
+.t {
+	padding-left: 11px;
+    padding-top: 4px;
+}
+.circle {
+	position: relative;
+    width:24px;
+    height:24px;
+    left:0;
+    top:0;
+}
+.color-circle, .blank-circle {
+	position: absolute;
+	border-radius:12px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width:24px;
+    height:24px;
+}
+.blank-circle {
+	background-color: #fff;
+	width:20px;
+    height:20px;
+}
+.line-toggle .blank-circle{
+	transform: translate(-50%, -50%) scale(0);
+	animation: scale-down 0.3s;
+}
+.line-toggle.c .blank-circle{
+	animation: scale-up 0.3s;
+	transform: translate(-50%, -50%) scale(1);
+}
+.checkmark_stem {
+    position: absolute;
+    width:2px;
+    height:11px;
+    background-color:#fff;
+    left:12px;
+    top:4px;
+}
+.checkmark_kick {
+    position: absolute;
+    width:6px;
+    height:2px;
+    background-color:#fff;
+    left:8px;
+    top:13px;
 }

@@ -1,4 +1,4 @@
-import { translate, addElement, formatDate, getDayOfWeek } from "./functions";
+import { translate, addElement, formatDate, getDayOfWeek, scale } from "./functions";
 import { fontFamily, popupConfig } from "./config";
 import { fs, bold } from "./font";
 
@@ -8,26 +8,29 @@ export class Popup {
 	constructor(chart, y, height) {
 		this.chart = chart;
 		this.x = -1;
-		this.y = y;
 		this.height = height;
-		this.hidden = false;
-		this.line = this.chart.addElement('line', { x1: this.x, x2: this.x, y1: this.y, y2: this.y + this.height, stroke: '#c0c', 'stroke-width': 1 });
-		this.box = this.chart.addElement('g');
+		this.hidden = true;
+		this.mainGroup = addElement(this.chart.svg, 'g', {visibility: 'hidden'}, true);
+		this.box = addElement(this.mainGroup, 'g', {}, true);
+		this.lineGroup = addElement(this.mainGroup, 'g', {}, true);
+		this.line = addElement(this.lineGroup, 'line', { x1: 0, x2: 0, y1: y + popupConfig.height / 2, y2: height + popupConfig.height / 2, stroke: '#c0c', 'stroke-width': 1 }, true);
 		this.border = addElement(this.box, 'rect', {
 			x: 0, y: 0, width: 150, height: popupConfig.height,
 			rx: 7, ry: 7,
+			stroke: '#ccc',
 			fill: this.chart.theme.background
 		});
-		this.label = addElement(this.box, 'text', { 
-			x: popupConfig.padding.left, y: popupConfig.padding.top, 
+		this.label = addElement(this.box, 'text', {
+			x: popupConfig.padding.left, y: popupConfig.padding.top,
 			...fontFamily, ...fs(header.fontSize)
 		});
 		this.detailTexts = [];
+		this.lineCircles = [];
 	}
 
 	move(points) {
 		if (!points[0] || !points[0][1]) return;
-		let [threshold, x, i, v] = points[0][1];
+		let [threshold, x, y, i, v] = points[0][1];
 		this.show();
 		if (x !== this.x) {
 			this.x = x;
@@ -36,15 +39,15 @@ export class Popup {
 			this.label.textContent = labelText;
 			let width = Math.max(popupConfig.minWidth, this.setDetailTexts(points, i));
 			this.border.setAttribute('width', width);
-			translate(this.line, x);
+			translate(this.lineGroup, x);
 			this.box.setAttribute('transform', `translate(${x - width / 2}, 80)`);
-			this.chart.svg.appendChild(this.box);
+			// this.chart.svg.appendChild(this.box);
 		}
 	}
 
 	setDetailTexts(lines, n) {
 		let offsetX = popupConfig.padding.left;
-		lines.forEach(([line, [threshold, x, _, v]], i) => {
+		lines.forEach(([line, [threshold, x, y, _, v]], i) => {
 			let texts = this.detailTexts[i];
 			if (!texts) {
 				let lineLabel = addElement(this.box, 'text', {
@@ -54,7 +57,7 @@ export class Popup {
 				});
 				let lineValue = addElement(this.box, 'text', {
 					x: offsetX, y: popupConfig.getY(value),
-					fill: line.color, 
+					fill: line.color,
 					...fontFamily, ...fs(value.fontSize), ...bold
 				});
 				texts = [lineLabel, lineValue];
@@ -66,14 +69,23 @@ export class Popup {
 			let labelBox = lineLabel.getBBox();
 			let valueBox = lineValue.getBBox();
 			offsetX += Math.max(labelBox.width + value.marginRight, valueBox.width + value.marginRight, value.minWidth);
+
+			// circles
+			let circle = this.lineCircles[i];
+			if (!circle) {
+				circle = addElement(this.lineGroup, 'circle', {
+					cx: 0, cy: 0, r: popupConfig.circleRadius, stroke: line.color, 'stroke-width': '3', fill: this.chart.theme.background
+				});
+				this.lineCircles.push(circle);
+			}
+			translate(circle, 0, y);
 		});
 		return offsetX;
 	}
 
 	show() {
 		if (!this.hidden) return;
-		this.line.setAttribute('visibility', 'visible');
-		this.box.setAttribute('visibility', 'visible');
+		this.mainGroup.setAttribute('visibility', 'visible');
 		this.hidden = false;
 		// this.chart.svg.removeChild(this.box);
 		// this.chart.svg.appendChild(this.box);
@@ -81,8 +93,7 @@ export class Popup {
 
 	hide() {
 		if (this.hidden) return;
-		this.line.setAttribute('visibility', 'hidden');
-		this.box.setAttribute('visibility', 'hidden');
+		this.mainGroup.setAttribute('visibility', 'hidden');
 		this.hidden = true;
 	}
 

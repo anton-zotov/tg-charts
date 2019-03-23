@@ -1,8 +1,20 @@
 import LineChartView from "./lineChartView";
 import Preview from "./preview";
-import { minDt, lightTheme } from "./config";
+import { minDt, lightTheme, darkTheme } from "./config";
 import { getDefs, appendDefs } from "./defs";
-import { dc, average } from "./functions";
+import { dc, average, htmlToElements, appendHtml, htmlToElement } from "./functions";
+
+const toggleButtonTemplate = (label) => `<button class="line-toggle">
+	<div class="circle">
+		<div class="color-circle"></div>
+		<div class="blank-circle"></div>
+		<span class="checkmark">
+			<div class="checkmark_stem"></div>
+			<div class="checkmark_kick"></div>
+		</span>
+	</div>
+	<span class="t">${label}</span>
+</button>`;
 
 export default class LineChart {
 	constructor(parent, width, height, data, options) {
@@ -45,9 +57,9 @@ export default class LineChart {
 		let buttonsHolder = dc('div');
 		buttonsHolder.classList.add('bh');
 		Object.entries(this.data.names).forEach(([name, label]) => {
-			let button = dc('button');
-			button.textContent = label;
-			button.classList.add('c');
+			let button = htmlToElement(toggleButtonTemplate(label));
+			button.querySelector('.color-circle').style.backgroundColor = this.data.colors[name];
+			// button.classList.add('c');
 			button.onclick = () => {
 				this.view.toggleLine(name);
 				this.preview.toggleLine(name);
@@ -99,5 +111,18 @@ export default class LineChart {
 		this.animateFrame++;
 
 		window.requestAnimationFrame(this.animate.bind(this));
+	}
+
+	toggleTheme() {
+		if (this.theme === lightTheme) {
+			this.theme = darkTheme;
+		} else {
+			this.theme = lightTheme;
+		}
+		this.updateTheme();
+	}
+
+	updateTheme() {
+		this.preview.updateTheme();
 	}
 }

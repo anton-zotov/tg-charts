@@ -4,6 +4,7 @@ import Text from "./text";
 import YAxis from "./yAxis";
 import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd } from "./config";
 import { Popup } from "./popup";
+import YAxisSet from "./yAxisSet";
 
 const yAxesStartX = 15;
 const tickFontSize = 30;
@@ -13,16 +14,17 @@ export default class LineChartView {
 		this.y = y;
 		this.chart = chart;
 		this.height = height;
-		this.yAxes = [];
+		this.zeroYAxis = new YAxis(this, 0);
+		this.yAxisSets = [];
 		this.xAxesTicks = [];
 		this.xTickWidth = 0;
 		this.xTickY = this.y + this.height + 26;
 		this.highestPointChangeSpeed = 0;
 		this.tickNumbers = [];
 
-		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: '#fff' });
+		this.background = this.chart.addElement('rect', { x: 0, y: this.y, width: this.chart.width, height: this.height, fill: 'none', 'pointer-events': 'all' });
 		this.background.addEventListener('mousemove', this.onHover.bind(this));
-		this.background.addEventListener('touchstast', this.onHover.bind(this));
+		this.background.addEventListener('touchstart', this.onHover.bind(this));
 		this.background.addEventListener('mouseleave', () => this.popup.hide());
 		this.background.addEventListener('touchend', () => this.popup.hide());
 
@@ -50,19 +52,26 @@ export default class LineChartView {
 
 	createYAxes(initial = false) {
 		let newTickNumbers = getAxisTicks(this.targetHighestPoint);
+		// if (initial) {
+		// 	this.yAxisSet = new YAxisSet(this, newTickNumbers);
+		// }
 		if (!initial && ticksAreEqual(this.tickNumbers, newTickNumbers)) {
-			this.tickNumbers = newTickNumbers;
-			return;	
+			return;
 		}
 		this.tickNumbers = newTickNumbers;
 		if (!initial) {
-			this.yAxes.forEach(yAxis => yAxis.hide());
+			// this.yAxes.forEach(yAxis => yAxis.hide());
+			this.yAxisSets.forEach(set => set.hide());
 		}
-		newTickNumbers.forEach(tickN => {
-			let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
-			if (!initial) yAxis.show();
-			this.yAxes.push(yAxis);
-		});
+		// newTickNumbers.forEach(tickN => {
+		// 	let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
+		// 	if (!initial) yAxis.show();
+		// 	this.yAxes.push(yAxis);
+			
+		// });
+		let set = new YAxisSet(this, newTickNumbers);
+		if (!initial) set.show();
+		this.yAxisSets.push(set);
 	}
 
 	createXTicks() {
@@ -123,9 +132,12 @@ export default class LineChartView {
 			approachTarget(this, 'highestPoint', this.targetHighestPoint, this.highestPointChangeSpeed, dt);
 			this.lineSet.highestPoint = this.highestPoint;
 			this.lineSet.redraw();
-			this.yAxes.forEach(yAxis => {
-				yAxis.update();
-				yAxis.onDraw(dt);
+			// this.yAxes.forEach(yAxis => {
+			// 	yAxis.update();
+			// 	yAxis.onDraw(dt);
+			// });
+			this.yAxisSets.forEach(set => {
+				set.onDraw(dt);
 			});
 		}
 	}

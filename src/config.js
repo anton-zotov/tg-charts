@@ -12,6 +12,7 @@ export const fontFamily = { 'font-family': 'sans-serif' };
 export const popupConfig = {
 	minWidth: 140,
 	height: 100,
+	circleRadius: 10,
 	padding: {
 		left: 15,
 		top: 30
@@ -39,5 +40,9 @@ export const lightTheme = {
 	background: '#fff'
 };
 export const darkTheme = {
-	background: '#000'
+	background: '#242F3E'
 };
+
+export const tickFontSize = 30;
+export const axisColor = '#ccc';
+export const axisTextColor = '#aaa';

@@ -2,10 +2,12 @@ import './main.css';
 import data from './chart_data.json';
 import LineChart from './lineChart';
 
+const charts = [];
 function createChart(parent, data, options = {}) {
 	let width = parent.clientWidth;
 	let height = parent.clientHeight / 3 * 2;
 	let lineChart = new LineChart(parent, width, height, data, options);
+	charts.push(lineChart);
 }
 
 function start() {
@@ -19,8 +21,13 @@ function start() {
 	// createChart(document.body, data[3]);
 	// createChart(document.body, data[3], { cachePreview: true });
 	// createChart(document.body, data[4]);
-	createChart(document.body, data[4], { cachePreview: true });
+	createChart(document.body, data[5], { cachePreview: true });
 	// createChart(document.body, data[5]);
+}
+
+window.toggleTheme = () => {
+	document.body.classList.toggle('dark-theme');
+	charts.forEach(chart => chart.toggleTheme());
 }
 
 window.addEventListener('load', start);

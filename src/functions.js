@@ -1,9 +1,9 @@
 import Line from "./line";
 
-export function addElement(svg, tagName, attributes = {}) {
+export function addElement(svg, tagName, attributes = {}, prepend = false) {
 	let el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 	Object.entries(attributes).forEach(([name, value]) => el.setAttribute(name, value));
-	return svg.appendChild(el);
+	return prepend ? svg.insertBefore(el, svg.firstChild) : svg.appendChild(el);
 }
 
 export function makeD(coords) {
@@ -17,11 +17,11 @@ export function makeD(coords) {
 	return d;
 }
 
-export function addPath(svg, coords, attributes = {}) {
+export function addPath(svg, coords, attributes = {}, prepend = true) {
 	return addElement(svg, 'path', {
 		d: makeD(coords), fill: 'none',
 		...attributes
-	});
+	}, prepend);
 }
 
 export function translate(line, x, y = 0) {
@@ -92,5 +92,12 @@ export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
 }
 
 export const dc = document.createElement.bind(document);
+
+export function htmlToElement(html) {
+    var template = document.createElement('template');
+    html = html.trim(); // Never return a text node of whitespace as the result
+    template.innerHTML = html;
+    return template.content.firstChild;
+}
 
 export const average = arr => Math.round(arr.reduce((p, c) => p + c, 0) / arr.length);

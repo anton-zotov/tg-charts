@@ -22,7 +22,7 @@ export default class Line {
 
 	getHighestPoint() {
 		let [firstIndex, endIndex] = this.getShownIndexes();
-		return Math.max(...this.ys);
+		// return Math.max(...this.ys);
 		return Math.max(...this.ys.slice(firstIndex, endIndex));
 	}
 
@@ -43,11 +43,11 @@ export default class Line {
 			ys = this.ys.slice(firstIndex, endIndex);
 		}
 		this.pointPosCache = [];
-		let currentPos = (-1 + startI) * step - xOffset;;
 		let temp = ys.map((v, i) => {
-			this.pointPosCache.push([currentPos + step / 2, currentPos, i + startI, v]);
-			currentPos = (i + startI) * step - xOffset;
-			return [currentPos, this.y - v * this.yCoeff]
+			let currentY = this.y - v * this.yCoeff;
+			let currentPos = (i + startI) * step - xOffset;
+			this.pointPosCache.push([currentPos + step / 2, currentPos, currentY, i + startI, v]);
+			return [currentPos, currentY]
 		});
 		return temp;
 	}
