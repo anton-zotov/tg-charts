@@ -7,7 +7,11 @@ export default class YAxisSet {
 		this.view = view;
 		this.opacity = this.targetOpacity = 1;
 		this.highestPoint = view.highestPoint;
-		this.mainGroup = addElement(this.view.chart.svg, 'g', {}, true);
+		this.mainGroup = addElement(this.view.chart.svg, 'g', {
+			stroke: this.view.chart.theme.axis.line, 
+			'stroke-width': 2,
+			fill: this.view.chart.theme.axis.text
+		}, true);
 		this.groups = [];
 		this.create(tickNumbers);
 	}
@@ -20,12 +24,11 @@ export default class YAxisSet {
 			}, true);
 			this.groups.push([g, tickN]);
 			addElement(g, 'line', {
-				x1: 0, y1: 0, x2: this.view.chart.width, y2: 0,
-				stroke: axisColor, 'stroke-width': 1
+				x1: 0, y1: 0, x2: this.view.chart.width, y2: 0
 			});
 			let tick = addElement(g, 'text', {
 				x: 0, y: -8, ...fontFamily,
-				...fs(tickFontSize), fill: axisTextColor
+				...fs(tickFontSize), stroke: 'none'
 			});
 			tick.textContent = tickN;
 		});
@@ -68,5 +71,10 @@ export default class YAxisSet {
 		this.mainGroup.remove();
 		this.mainGroup = null;
 		this.view.yAxisSets = this.view.yAxisSets.filter(set => set !== this);
+	}
+
+	updateTheme() {
+		this.mainGroup.setAttribute('stroke', this.view.chart.theme.axis.line);
+		this.mainGroup.setAttribute('fill', this.view.chart.theme.axis.text);
 	}
 }

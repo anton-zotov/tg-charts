@@ -12,12 +12,14 @@ export class Popup {
 		this.hidden = true;
 		this.mainGroup = addElement(this.chart.svg, 'g', { visibility: 'hidden' });
 		this.lineGroup = addElement(this.mainGroup, 'g', {},);
-		this.line = addElement(this.lineGroup, 'line', { x1: 0, x2: 0, y1: y, y2: height + 10, stroke: '#c0c', 'stroke-width': 1 });
+		this.line = addElement(this.lineGroup, 'line', { x1: 0, x2: 0, y1: y, y2: height + 10, 
+			stroke: this.chart.theme.popup.line, 'stroke-width': 2
+		});
 		this.box = addElement(this.mainGroup, 'g', {});
 		this.border = addElement(this.box, 'rect', {
 			x: 0, y: 0, width: 150, height: popupConfig.height,
 			rx: popupConfig.borderRadius, ry: popupConfig.borderRadius,
-			stroke: '#ccc',
+			stroke: this.chart.theme.popup.border,
 			fill: this.chart.theme.background
 		});
 		this.label = addElement(this.box, 'text', {
@@ -44,7 +46,9 @@ export class Popup {
 			let width = Math.max(popupConfig.minWidth, this.setDetailTexts(points, i));
 			this.border.setAttribute('width', width);
 			translate(this.lineGroup, x);
-			this.box.setAttribute('transform', `translate(${x - width / 2}, ${popupConfig.y})`);
+			let popupX = Math.max(3, x - width / 2,popupConfig.y);
+			popupX = Math.min(this.chart.width - width - 3, popupX);
+			translate(this.box, popupX);
 			// this.chart.svg.appendChild(this.box);
 		}
 	}
@@ -110,5 +114,8 @@ export class Popup {
 	updateTheme() {
 		this.border.setAttribute('fill', this.chart.theme.background);
 		this.label.setAttribute('fill', this.chart.theme.text);
+		this.line.setAttribute('stroke', this.chart.theme.popup.line);
+		this.border.setAttribute('stroke', this.chart.theme.popup.border);
+		this.lineCircles.forEach(circle => circle.setAttribute('fill', this.chart.theme.background));
 	}
 }

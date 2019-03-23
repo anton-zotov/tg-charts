@@ -44,10 +44,11 @@ export default class Line {
 			ys = this.ys.slice(firstIndex, endIndex);
 		}
 		this.pointPosCache = [];
+		let ysLen = ys.length;
 		let temp = ys.map((v, i) => {
 			let currentY = this.y - v * this.yCoeff;
 			let currentPos = (i + startI) * step - xOffset;
-			this.pointPosCache.push([currentPos + step / 2, currentPos, currentY, i + startI, v]);
+			if (i > 0 && i < ysLen - 1) this.pointPosCache.push([currentPos + step / 2 + 20, currentPos, currentY, i + startI, v]);
 			return [currentPos, currentY]
 		});
 		return temp;

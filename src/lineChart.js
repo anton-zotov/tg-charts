@@ -9,8 +9,8 @@ const toggleButtonTemplate = (label) => `<button class="line-toggle">
 		<div class="color-circle"></div>
 		<div class="blank-circle"></div>
 		<span class="checkmark">
-			<div class="checkmark_stem"></div>
-			<div class="checkmark_kick"></div>
+			<div class="checkmark-stem"></div>
+			<div class="checkmark-kick"></div>
 		</span>
 	</div>
 	<span class="t">${label}</span>

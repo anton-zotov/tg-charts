@@ -1,4 +1,4 @@
-import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget, ticksAreEqual } from "./functions";
+import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget, ticksAreEqual, addElement } from "./functions";
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
@@ -21,6 +21,7 @@ export default class LineChartView {
 		this.xTickY = this.y + this.height + 26;
 		this.highestPointChangeSpeed = 0;
 		this.tickNumbers = [];
+		this.xTickGroup = addElement(chart.svg, 'g', { fill: this.chart.theme.axis.text });
 
 		this.popup = new Popup(chart, y, height);
 
@@ -54,12 +55,12 @@ export default class LineChartView {
 	createLines(data) {
 		this.xs = data.columns[0].slice(1);
 		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd);
-		this.chart.svg.appendChild(this.background);
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.createYAxes(true);
 		this.createXTicks();
 		this.chart.drawables.push(this);
 		this.popup.bringToFront();
+		this.chart.svg.appendChild(this.background);
 	}
 
 	createYAxes(initial = false) {
@@ -91,7 +92,7 @@ export default class LineChartView {
 		let step = this.chart.width / Math.max(1, this.xs.length - 1) / viewboxDiff;
 		let xOffset = this.chart.width / viewboxDiff * defaultViewboxStart;
 		this.xs.forEach((ts, i) => {
-			let t = new Text(this.chart, i * step - xOffset, this.xTickY, formatDate(new Date(ts)), tickFontSize, '#aaa', true, true);
+			let t = new Text(this.chart, this.xTickGroup, i * step - xOffset, this.xTickY, formatDate(new Date(ts)), tickFontSize, true, true);
 			this.xAxesTicks.push(t);
 			this.xTickWidth = Math.max(this.xTickWidth, t.width);
 		});
@@ -161,5 +162,8 @@ export default class LineChartView {
 
 	updateTheme() {
 		this.popup.updateTheme();
+		this.zeroYAxis.updateTheme();
+		this.xTickGroup.setAttribute('fill', this.chart.theme.axis.text);
+		this.yAxisSets.forEach(set => set.updateTheme());
 	}
 }

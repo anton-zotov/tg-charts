@@ -1,4 +1,4 @@
-import './main.css';
+import './main.scss';
 import data from './chart_data.json';
 import LineChart from './lineChart';
 
@@ -18,6 +18,7 @@ function start() {
 	// createChart(document.body, data[1]);
 	// createChart(document.body, data[2]);
 
+	createChart(document.body, data[1]);
 	createChart(document.body, data[3]);
 	// createChart(document.body, data[3], { cachePreview: true });
 	// createChart(document.body, data[4]);

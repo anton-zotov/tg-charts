@@ -16,14 +16,19 @@ export default class YAxis {
 		let y = this.view.y + this.view.height;
 		this.line = this.view.chart.addElement('line', {
 			x1: 0, y1: y, x2: this.view.chart.width, y2: y,
-			stroke: axisColor, 'stroke-width': 1
+			stroke: this.view.chart.theme.axis.line, 'stroke-width': 2
 		});
 		this.tick = this.view.chart.addElement('text',
 			{
 				x: 0, y: y - 8, ...fontFamily,
-				...fs(tickFontSize), fill: axisTextColor
+				...fs(tickFontSize), fill: this.view.chart.theme.axis.text
 			});
 		this.tick.textContent = this.tickN;
+	}
+
+	updateTheme() {
+		this.line.setAttribute('stroke', this.view.chart.theme.axis.line);
+		this.tick.setAttribute('fill', this.view.chart.theme.axis.text);
 	}
 
 	// update() {

@@ -1,6 +1,6 @@
 import { addElement, translate, approachTarget, translateScale, scale } from "./functions";
 import LineSet from "./lineSet";
-import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime } from "./config";
+import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime, shadowColor, viewboxHandleWidth } from "./config";
 import Cache from "./cache";
 
 const lineSetMock = {
@@ -10,7 +10,7 @@ const lineSetMock = {
 }
 
 const defaultViewboxWidth = 100;
-const getScale = x => x / defaultViewboxWidth;
+const getScale = x => Math.max(x, 0) / defaultViewboxWidth;
 
 export default class Preview {
 	constructor(chart, y, height, data) {
@@ -37,26 +37,26 @@ export default class Preview {
 		this.middleGroup = addElement(this.group, 'g', { x: 0, y: this.y });
 		this.rightGroup = addElement(this.group, 'g', { x: defaultViewboxWidth, y: this.y });
 
-		let color = 'rgba(200,200,200,0.7)';
+		let borderColor = this.chart.theme.preview.border;
 		// left group
 		this.leftShadow = addElement(this.group, 'rect',
-			{ fill: '#ddd', 'fill-opacity': '0.7', x: -this.chart.width, width: this.chart.width, height: this.height, y: 0 });
+			{ fill: this.chart.theme.preview.shadow, x: -this.chart.width, width: this.chart.width, height: this.height, y: 0 });
 		this.leftViewboxBorder = addElement(this.group, 'rect',
-			{ fill: color, x: 0, width: 10, y: 0, height: this.height });
+			{ fill: borderColor, x: 0, width: viewboxHandleWidth, y: 0, height: this.height });
 
 		// middle group
 		this.viewboxRect = addElement(this.middleGroup, 'rect',
 			{ fill: 'none', 'pointer-events': 'visible', x: 0, width: defaultViewboxWidth, height: this.height, y: 0 });
 		this.topViewboxBorder = addElement(this.middleGroup, 'line',
-			{ stroke: color, 'stroke-width': 1, x1: 0, x2: defaultViewboxWidth, y1: 0, y2: 0 });
+			{ stroke: borderColor, 'stroke-width': 2, x1: 0, x2: defaultViewboxWidth, y1: 1, y2: 1 });
 		this.bottomViewboxBorder = addElement(this.middleGroup, 'line',
-			{ stroke: color, 'stroke-width': 1, x1: 0, x2: defaultViewboxWidth, y1: this.height, y2: this.height });
+			{ stroke: borderColor, 'stroke-width': 2, x1: 0, x2: defaultViewboxWidth, y1: this.height - 1, y2: this.height - 1 });
 
 		// right group
 		this.rightShadow = addElement(this.rightGroup, 'rect',
-			{ fill: '#ddd', 'fill-opacity': '0.7', x: 0, width: this.chart.width, height: this.height, y: 0 });
+			{ fill: this.chart.theme.preview.shadow, x: 0, width: this.chart.width, height: this.height, y: 0 });
 		this.rightViewboxBorder = addElement(this.rightGroup, 'rect',
-			{ fill: color, x: -10, width: 10, y: 0, height: this.height });
+			{ fill: borderColor, x: -10, width: viewboxHandleWidth, y: 0, height: this.height });
 
 		this.viewboxRect.onmousedown = this.onViewboxClick.bind(this);
 		this.viewboxRect.addEventListener('touchstart', (e) => this.onViewboxClick(e.touches[0]));
@@ -149,9 +149,9 @@ export default class Preview {
 		let left = this.viewboxStartPx;
 		let right = this.viewboxEndPx;
 		let width = right - left;
-		let scaleX = getScale(width);
+		let scaleX = getScale(width - 20);
 		if (this.widthChanged) {
-			scale(this.middleGroup, scaleX);
+			translateScale(this.middleGroup, 10, scaleX);
 			translate(this.rightGroup, width);
 		}
 		translate(this.group, left, this.y);
@@ -196,5 +196,11 @@ export default class Preview {
 
 	updateTheme() {
 		this.cache.updateTheme();
+		this.leftViewboxBorder.setAttribute('fill', this.chart.theme.preview.border);
+		this.rightViewboxBorder.setAttribute('fill', this.chart.theme.preview.border);
+		this.topViewboxBorder.setAttribute('stroke', this.chart.theme.preview.border);
+		this.bottomViewboxBorder.setAttribute('stroke', this.chart.theme.preview.border);
+		this.leftShadow.setAttribute('fill', this.chart.theme.preview.shadow);
+		this.rightShadow.setAttribute('fill', this.chart.theme.preview.shadow);
 	}
 }
