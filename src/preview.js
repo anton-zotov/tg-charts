@@ -1,6 +1,6 @@
 import { addElement, translate, approachTarget, translateScale, scale } from "./functions";
 import LineSet from "./lineSet";
-import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime, shadowColor, viewboxHandleWidth } from "./config";
+import { defaultViewboxStart, defaultViewboxEnd, minViewboxWidthPx, lineMoveAnimationTime, viewboxHandleWidth } from "./config";
 import Cache from "./cache";
 
 const defaultViewboxWidth = 100;

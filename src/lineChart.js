@@ -1,7 +1,6 @@
 import LineChartView from "./lineChartView";
 import Preview from "./preview";
 import { minDt, lightTheme, darkTheme } from "./config";
-import { getDefs, appendDefs } from "./defs";
 import { dc, average, htmlToElements, appendHtml, htmlToElement } from "./functions";
 
 const toggleButtonTemplate = (label) => `<button class="line-toggle">
@@ -44,10 +43,6 @@ export default class LineChart {
 		this.preview = new Preview(this, this.height - previewHeight, previewHeight, data);
 		this.preview.onChange = () => this.isViewDirty = true;
 		window.requestAnimationFrame(this.animate.bind(this));
-
-		// setInterval(() => {
-		// 	console.log('childElementCount', this.svg.childElementCount);
-		// }, 500);
 	}
 
 	appendSvg() {
@@ -63,7 +58,6 @@ export default class LineChart {
 		Object.entries(this.data.names).forEach(([name, label]) => {
 			let button = htmlToElement(toggleButtonTemplate(label));
 			button.querySelector('.color-circle').style.backgroundColor = this.data.colors[name];
-			// button.classList.add('c');
 			button.onclick = () => {
 				this.view.toggleLine(name);
 				this.preview.toggleLine(name);

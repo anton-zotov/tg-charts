@@ -1,4 +1,4 @@
-import { axisColor, fontFamily, axisTextColor, yAxisOpacityPerSecond, tickFontSize } from "./config";
+import { fontFamily, yAxisOpacityPerSecond, tickFontSize } from "./config";
 import { fs } from "./font";
 import { addElement, scale, approachTarget, translate, shortenNumber, getShortenNumberInfo } from "./functions";
 
@@ -58,7 +58,6 @@ export default class YAxisSet {
 		if (this.opacity === 0 && this.targetOpacity === 0) {
 			return this.destroy();
 		}
-		// scale(this.mainGroup, 1, this.getScaleY());
 		this.groups.forEach(([group, tickN]) => {
 			translate(group, 0, this.getTickY(tickN));
 		});

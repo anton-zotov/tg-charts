@@ -1,6 +1,5 @@
 import Line from "./line";
-import { approachTarget, addElement } from "./functions";
-import { lineMoveAnimationTime } from "./config";
+import { addElement } from "./functions";
 
 export default class LineSet {
 	constructor(chart, y, height, lineWidth, data, shownPartStart = 0, shownPartEnd = 1) {
@@ -23,7 +22,6 @@ export default class LineSet {
 		this.yAxesMoveSpeed = 0;
 		this.highestPoint = this.getHighestPoint();
 		this.redraw();
-		// this.chart.drawables.push(this);
 	}
 
 	getHighestPoint() {
@@ -34,17 +32,8 @@ export default class LineSet {
 
 	update(config) {
 		this.lines.forEach(line => line.config(config));
-		// this.targetHighestPoint = this.getHighestPoint();
-		// this.yAxesMoveSpeed = Math.abs(this.targetHighestPoint - this.highestPoint) / lineMoveAnimationTime;
 		this.redraw()
 	}
-
-	// onDraw(dt) {
-	// 	if (this.highestPoint !== this.targetHighestPoint) {
-	// 		approachTarget(this, 'highestPoint', this.targetHighestPoint, this.yAxesMoveSpeed, dt);
-	// 		this.redrawYAxes();
-	// 	}
-	// }
 
 	redraw() {
 		let yCoeff = this.highestPoint ? (this.height / this.highestPoint) : 0;

@@ -1,4 +1,4 @@
-import { updateText, approachTarget, addElement } from "./functions";
+import { approachTarget, addElement } from "./functions";
 import { xTickOpacityPerSecond, fontFamily } from "./config";
 import { fs } from "./font";
 
@@ -60,7 +60,6 @@ export default class Text {
 
 	onDraw(dt) {
 		if (this.opacity !== this.targetOpacity) {
-			// console.log('animate', this.element.textContent, this.x);
 			approachTarget(this, 'opacity', this.targetOpacity, xTickOpacityPerSecond, dt);
 			this.element.setAttribute('fill-opacity', this.opacity);
 		}

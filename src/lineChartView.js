@@ -6,7 +6,6 @@ import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd, lineWidt
 import { Popup } from "./popup";
 import YAxisSet from "./yAxisSet";
 
-const yAxesStartX = 15;
 const tickFontSize = 30;
 
 const lineSetMock = {
@@ -63,7 +62,6 @@ export default class LineChartView {
 	createLines(data) {
 		this.xs = data.columns[0].slice(1);
 		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd);
-		// this.lineSet = lineSetMock;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.createYAxes(true);
 		this.createXTicks();
@@ -74,23 +72,13 @@ export default class LineChartView {
 
 	createYAxes(initial = false) {
 		let newTickNumbers = getAxisTicks(this.targetHighestPoint);
-		// if (initial) {
-		// 	this.yAxisSet = new YAxisSet(this, newTickNumbers);
-		// }
 		if (!initial && ticksAreEqual(this.tickNumbers, newTickNumbers)) {
 			return;
 		}
 		this.tickNumbers = newTickNumbers;
 		if (!initial) {
-			// this.yAxes.forEach(yAxis => yAxis.hide());
 			this.yAxisSets.forEach(set => set.hide());
 		}
-		// newTickNumbers.forEach(tickN => {
-		// 	let yAxis = new YAxis(this, yAxesStartX, this.chart.width, '#ccc', tickN, tickFontSize);
-		// 	if (!initial) yAxis.show();
-		// 	this.yAxes.push(yAxis);
-
-		// });
 		let set = new YAxisSet(this, newTickNumbers);
 		if (!initial) set.show();
 		this.yAxisSets.push(set);
@@ -124,7 +112,6 @@ export default class LineChartView {
 			else tick.show();
 			moved += tick.moveX(i * step - xOffset);
 		});
-		// console.log('moved', moved);
 	}
 
 	isShown(i, step) {
@@ -154,10 +141,6 @@ export default class LineChartView {
 			approachTarget(this, 'highestPoint', this.targetHighestPoint, this.highestPointChangeSpeed, dt);
 			this.lineSet.highestPoint = this.highestPoint;
 			this.lineSet.redraw();
-			// this.yAxes.forEach(yAxis => {
-			// 	yAxis.update();
-			// 	yAxis.onDraw(dt);
-			// });
 			this.yAxisSets.forEach(set => {
 				set.onDraw(dt);
 			});

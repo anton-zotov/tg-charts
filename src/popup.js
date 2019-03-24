@@ -41,7 +41,6 @@ export class Popup {
 		let [threshold, x, y, i, v] = points[0][1];
 		this.show();
 		if (x !== this.x) {
-			// points = points.filter(([line]) => line.shown);
 			this.x = x;
 			let date = new Date(this.chart.data.columns[0][i + 1]);
 			let labelText = getDayOfWeek(date) + ', ' + formatDate(date);
@@ -52,7 +51,6 @@ export class Popup {
 			let popupX = Math.max(3, x - width / 2, popupConfig.y);
 			popupX = Math.min(this.chart.width - width - 3, popupX);
 			translate(this.box, popupX);
-			// this.chart.svg.appendChild(this.box);
 		}
 	}
 
@@ -134,8 +132,6 @@ export class Popup {
 		if (!this.hidden) return;
 		this.mainGroup.setAttribute('visibility', 'visible');
 		this.hidden = false;
-		// this.chart.svg.removeChild(this.box);
-		// this.chart.svg.appendChild(this.box);
 	}
 
 	hide() {

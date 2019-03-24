@@ -1,5 +1,3 @@
-import Line from "./line";
-
 export function addElement(svg, tagName, attributes = {}, prepend = false) {
 	let el = document.createElementNS('http://www.w3.org/2000/svg', tagName);
 	Object.entries(attributes).forEach(([name, value]) => el.setAttribute(name, value));
@@ -8,13 +6,6 @@ export function addElement(svg, tagName, attributes = {}, prepend = false) {
 
 export function makeD(coords) {
 	if (coords.length < 2) return '';
-	// let d = '';
-	// if (coords[0]) {
-	// 	d += `M ${coords[0][0]} ${coords[0][1]}`;
-	// }
-	// for (let i = 1; i < coords.length; i++) {
-	// 	d += ` L ${coords[i][0]} ${coords[i][1]}`;
-	// }
 	let a = coords.map(([x, y]) => `${x} ${y}`);
 	return 'M ' + a.join(' L ');
 }
@@ -60,7 +51,6 @@ export function getAxisTicks(max) {
 	prevMax = max;
 	if (!ticksCache[max]) {
 		const gridN = 5;
-		// console.log('max', max, beautifyNumber(max, gridN));
 		max = beautifyNumber(max * 0.92, gridN, 0.04);
 		let step = Math.floor(max / gridN);
 		let ticks = Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
@@ -102,7 +92,7 @@ export const dc = document.createElement.bind(document);
 
 export function htmlToElement(html) {
 	var template = document.createElement('template');
-	html = html.trim(); // Never return a text node of whitespace as the result
+	html = html.trim();
 	template.innerHTML = html;
 	return template.content.firstChild;
 }
@@ -112,7 +102,6 @@ export const average = arr => Math.round(arr.reduce((p, c) => p + c, 0) / arr.le
 export function beautifyNumber(n, gridN, delta = 0.05) {
 	function makeDel(i) {
 		let dels = [5, 10, 25];
-		// console.log(i, dels[i % dels.length],  Math.floor(i / dels.length));
 		return dels[i % dels.length] * Math.pow(10, Math.floor(i / dels.length));
 	}
 	let nMax = n * (1 + delta);

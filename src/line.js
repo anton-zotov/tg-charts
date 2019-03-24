@@ -1,5 +1,5 @@
 import { addPath, makeD, approachTarget } from "./functions";
-import { yAxisOpacityPerSecond, lineOpacityPerSecond } from "./config";
+import { lineOpacityPerSecond } from "./config";
 
 export default class Line {
 	constructor(chart, parent, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd) {
@@ -23,7 +23,6 @@ export default class Line {
 
 	getHighestPoint() {
 		let [firstIndex, endIndex] = this.getShownIndexes();
-		// return Math.max(...this.ys);
 		return Math.max(...this.ys.slice(firstIndex, endIndex));
 	}
 
