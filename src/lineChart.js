@@ -16,6 +16,8 @@ const toggleButtonTemplate = (label) => `<button class="line-toggle">
 	<span class="t">${label}</span>
 </button>`;
 
+const showFPS = false;
+
 export default class LineChart {
 	constructor(parent, width, height, data, options) {
 		this.parent = parent.appendChild(dc('div'));
@@ -30,7 +32,7 @@ export default class LineChart {
 		this.theme = lightTheme;
 		this.animateTimes = [];
 		this.fpsPool = [];
-		this.appendFPS();
+		if (showFPS) this.appendFPS();
 		this.appendTitle();
 		this.appendSvg();
 		// appendDefs(this.svg);
@@ -81,7 +83,7 @@ export default class LineChart {
 		this.fps.classList.add('fps')
 		this.parent.appendChild(this.fps);
 	}
-	
+
 	appendTitle() {
 		this.title = document.createElement('h1');
 		this.title.textContent = 'Followers';
@@ -107,16 +109,18 @@ export default class LineChart {
 		this.drawables.forEach(drawable => drawable.onDraw(dt));
 		this.prevAnimationTimestamp = timestamp;
 
-		const poolSize = 20;
-		let animateTime = Math.round((performance.now() - startT) * 1000);
-		if (this.animateTimes.length >= poolSize) this.animateTimes.shift();
-		this.animateTimes.push(animateTime);
-		if (this.fpsPool.length >= poolSize) this.fpsPool.shift();
-		this.fpsPool.push(Math.round(1 / dt));
-		if (this.animateFrame % poolSize === 0) {
-			this.fps.textContent = `fps: ${average(this.fpsPool)} animate time: ${average(this.animateTimes)}`;
+		if (showFPS) {
+			const poolSize = 20;
+			let animateTime = Math.round((performance.now() - startT) * 1000);
+			if (this.animateTimes.length >= poolSize) this.animateTimes.shift();
+			this.animateTimes.push(animateTime);
+			if (this.fpsPool.length >= poolSize) this.fpsPool.shift();
+			this.fpsPool.push(Math.round(1 / dt));
+			if (this.animateFrame % poolSize === 0) {
+				this.fps.textContent = `fps: ${average(this.fpsPool)} animate time: ${average(this.animateTimes)}`;
+			}
+			this.animateFrame++;
 		}
-		this.animateFrame++;
 
 		window.requestAnimationFrame(this.animate.bind(this));
 	}

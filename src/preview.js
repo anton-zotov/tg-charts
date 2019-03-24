@@ -102,7 +102,7 @@ export default class Preview {
 		this.viewboxStartPx = Math.min(this.viewboxStartPx, this.viewboxEndPx - minViewboxWidthPx);
 		this.widthChanged = true;
 		this.calcViewboxPercentage();
-		// this.positionViewbox();
+		this.positionViewbox();
 		this.leftHandleDragStartX = pageX;
 	}
 
@@ -111,7 +111,7 @@ export default class Preview {
 		this.viewboxEndPx = Math.max(this.viewboxStartPx + minViewboxWidthPx, this.viewboxEndPx);
 		this.widthChanged = true;
 		this.calcViewboxPercentage();
-		// this.positionViewbox();
+		this.positionViewbox();
 		this.rightHandleDragStartX = pageX;
 	}
 
@@ -129,7 +129,7 @@ export default class Preview {
 			}
 		}
 		this.calcViewboxPercentage();
-		// this.positionViewbox();
+		this.positionViewbox();
 		this.dragStartX = pageX;
 	}
 

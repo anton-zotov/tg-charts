@@ -12,7 +12,6 @@ export default class Cache {
 		this.canvas = document.createElement('canvas');
 		this.canvas.setAttribute('width', width);
 		this.canvas.setAttribute('height', height);
-		//document.body.appendChild(this.canvas);
 		this.svgImage = document.createElement('img', { x: 0, y: 0, width, height });
 		this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 		this.svg.setAttribute('viewBox', `0 ${y} ${width} ${height}`);

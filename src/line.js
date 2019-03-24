@@ -34,8 +34,10 @@ export default class Line {
 	}
 
 	getPoints(onlyShown = true) {
-		let step = this.chart.width / Math.max(1, this.ys.length - 1) / (this.shownPartEnd - this.shownPartStart);
-		let xOffset = this.chart.width / (this.shownPartEnd - this.shownPartStart) * this.shownPartStart;
+		let width = Math.max(0.001, this.shownPartEnd - this.shownPartStart);
+		let start = Math.max(0.001, this.shownPartStart);
+		let step = this.chart.width / Math.max(1, this.ys.length - 1) / width;
+		let xOffset = this.chart.width / width * start;
 		let ys = this.ys;
 		let startI = 0;
 		if (onlyShown) {
@@ -48,7 +50,7 @@ export default class Line {
 		let temp = ys.map((v, i) => {
 			let currentY = this.y - v * this.yCoeff;
 			let currentPos = (i + startI) * step - xOffset;
-			if (i > 0 && i < ysLen - 1) this.pointPosCache.push([currentPos + step / 2 + 20, currentPos, currentY, i + startI, v]);
+			this.pointPosCache.push([currentPos + step / 2 + 20, currentPos, currentY, i + startI, v]);
 			return [currentPos, currentY]
 		});
 		return temp;
@@ -72,8 +74,8 @@ export default class Line {
 	config({ yCoeff, ys, shownPartStart, shownPartEnd }) {
 		if (ys) this.ys = ys;
 		if (yCoeff) this.yCoeff = yCoeff;
-		if (shownPartStart) this.shownPartStart = shownPartStart;
-		if (shownPartEnd) this.shownPartEnd = shownPartEnd;
+		this.shownPartStart = shownPartStart;
+		this.shownPartEnd = shownPartEnd;
 	}
 
 	redraw() {

@@ -1,4 +1,4 @@
-import { updateText, approachTarget, addElement, translate } from "./functions";
+import { updateText, approachTarget, addElement } from "./functions";
 import { xTickOpacityPerSecond, fontFamily } from "./config";
 import { fs } from "./font";
 
@@ -9,7 +9,7 @@ export default class Text {
 		this.centered = centered;
 		this.opacity = this.targetOpacity = transparent ? 0 : 1;
 		this.element = addElement(parent, 'text',
-			{ x: 0, y, ...fontFamily, ...fs(size), 'fill-opacity': this.opacity });
+			{ x, y, ...fontFamily, ...fs(size), 'fill-opacity': this.opacity });
 		this.element.textContent = text;
 		let box = this.element.getBBox();
 		this.width = box.width;
@@ -23,7 +23,7 @@ export default class Text {
 		x -= this.width / 2;
 		if (this.opacity && (this.inViewport(this.x) || this.inViewport(x))) {
 			this.x = x;
-			translate(this.element, x);
+			this.element.setAttribute('x', this.x);
 			return 1;
 		}
 		return 0;

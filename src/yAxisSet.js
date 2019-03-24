@@ -1,6 +1,6 @@
 import { axisColor, fontFamily, axisTextColor, yAxisOpacityPerSecond, tickFontSize } from "./config";
 import { fs } from "./font";
-import { addElement, scale, approachTarget, translate } from "./functions";
+import { addElement, scale, approachTarget, translate, shortenNumber, getShortenNumberInfo } from "./functions";
 
 export default class YAxisSet {
 	constructor(view, tickNumbers) {
@@ -17,6 +17,8 @@ export default class YAxisSet {
 	}
 
 	create(tickNumbers) {
+		let info = getShortenNumberInfo(tickNumbers[0]);
+		let [replaceN, letter] = info;
 		tickNumbers.forEach((tickN) => {
 			let y = this.getTickY(tickN);
 			let g = addElement(this.mainGroup, 'g', {
@@ -30,12 +32,12 @@ export default class YAxisSet {
 				x: 0, y: -8, ...fontFamily,
 				...fs(tickFontSize), stroke: 'none'
 			});
-			tick.textContent = tickN;
+			tick.textContent = shortenNumber(tickN, replaceN, letter);
 		});
 	}
 
 	getTickY(tickN) {
-		let yCoeff = this.view.height / this.view.highestPoint;
+		let yCoeff = this.view.height / (this.view.highestPoint || 1);
 		return this.view.y + this.view.height - tickN * yCoeff;
 	}
 

@@ -7,14 +7,15 @@ export function addElement(svg, tagName, attributes = {}, prepend = false) {
 }
 
 export function makeD(coords) {
-	let d = '';
-	if (coords[0]) {
-		d += `M ${coords[0][0]} ${coords[0][1]}`;
-	}
-	for (let i = 1; i < coords.length; i++) {
-		d += ` L ${coords[i][0]} ${coords[i][1]}`;
-	}
-	let a = coords.map(([x,y]) => `${x} ${y}`);
+	if (coords.length < 2) return '';
+	// let d = '';
+	// if (coords[0]) {
+	// 	d += `M ${coords[0][0]} ${coords[0][1]}`;
+	// }
+	// for (let i = 1; i < coords.length; i++) {
+	// 	d += ` L ${coords[i][0]} ${coords[i][1]}`;
+	// }
+	let a = coords.map(([x, y]) => `${x} ${y}`);
 	return 'M ' + a.join(' L ');
 }
 
@@ -26,7 +27,8 @@ export function addPath(svg, coords, attributes = {}, prepend = true) {
 }
 
 export function translate(line, x, y = 0) {
-	line.setAttribute('transform', `translate(${x}, ${y})`);
+	if (Number.isFinite(x) && Number.isFinite(y))
+		line.setAttribute('transform', `translate(${x}, ${y})`);
 }
 
 export function scale(line, x, y = 1) {
@@ -52,14 +54,18 @@ let ticksCache = {};
 let prevMax = -100;
 let prevTicks = [1, 2, 3, 4, 5];
 export function getAxisTicks(max) {
-	if (prevMax * 0.95 <= max && prevMax * 1.05 >= max) return prevTicks;
+	if (prevMax <= max && prevMax * 1.05 >= max) {
+		return prevTicks;
+	}
+	prevMax = max;
 	if (!ticksCache[max]) {
 		const gridN = 5;
-		let step = Math.floor(max * 0.95 / gridN);
+		// console.log('max', max, beautifyNumber(max, gridN));
+		max = beautifyNumber(max * 0.92, gridN, 0.04);
+		let step = Math.floor(max / gridN);
 		let ticks = Array.from(Array(gridN).keys()).map(n => (n + 1) * step);
 		ticksCache[max] = ticks;
 	}
-	prevMax = max;
 	prevTicks = ticksCache[max];
 	return prevTicks;
 }
@@ -95,10 +101,44 @@ export function approachTarget(obj, propName, targetValue, changeSpeed, dt) {
 export const dc = document.createElement.bind(document);
 
 export function htmlToElement(html) {
-    var template = document.createElement('template');
-    html = html.trim(); // Never return a text node of whitespace as the result
-    template.innerHTML = html;
-    return template.content.firstChild;
+	var template = document.createElement('template');
+	html = html.trim(); // Never return a text node of whitespace as the result
+	template.innerHTML = html;
+	return template.content.firstChild;
 }
 
 export const average = arr => Math.round(arr.reduce((p, c) => p + c, 0) / arr.length);
+
+export function beautifyNumber(n, gridN, delta = 0.05) {
+	function makeDel(i) {
+		let dels = [5, 10, 25];
+		// console.log(i, dels[i % dels.length],  Math.floor(i / dels.length));
+		return dels[i % dels.length] * Math.pow(10, Math.floor(i / dels.length));
+	}
+	let nMax = n * (1 + delta);
+	let nMin = n * (1 - delta);
+	let step = n / gridN;
+	let k = 0;
+	while (k < 50) {
+		let del = makeDel(k++);
+		let newN = Math.round(step / del) * del * gridN;
+		if (newN > nMax || newN < nMin) return n;
+		n = newN;
+	}
+	return n;
+}
+
+export function getShortenNumberInfo(n) {
+	n = n.toString();
+	let zeros = 0;
+	for (let i = n.length - 1; i >= 0; i--) {
+		if (n[i] === '0') zeros++;
+	}
+	let letters = [[0, ''], [3, 'k'], [6, 'm'], [9, 'b']];
+	return letters.reverse().find(([rn, l]) => zeros >= rn);
+}
+
+export function shortenNumber(n, replaceN, letter) {
+	n = n.toString();
+	return n.slice(0, n.length - replaceN) + letter;
+}
