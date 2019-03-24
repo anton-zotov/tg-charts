@@ -2,7 +2,7 @@ import { createLineSet, getAxisTicks, formatDate, ceilToPow2, approachTarget, ti
 import LineSet from "./lineSet";
 import Text from "./text";
 import YAxis from "./yAxis";
-import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd, lineWidth } from "./config";
+import { lineMoveAnimationTime, defaultViewboxStart, defaultViewboxEnd, lineWidth, chartPadding } from "./config";
 import { Popup } from "./popup";
 import YAxisSet from "./yAxisSet";
 
@@ -61,7 +61,7 @@ export default class LineChartView {
 
 	createLines(data) {
 		this.xs = data.columns[0].slice(1);
-		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd);
+		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd, chartPadding);
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.createYAxes(true);
 		this.createXTicks();
@@ -97,9 +97,10 @@ export default class LineChartView {
 	}
 
 	updateXAxis(shownPartStart, shownPartEnd) {
+		let chartWidth = this.chart.width - chartPadding;
 		let viewboxDiff = shownPartEnd - shownPartStart;
-		let step = this.chart.width / Math.max(1, this.xs.length - 1) / viewboxDiff;
-		let xOffset = this.chart.width / viewboxDiff * shownPartStart;
+		let step = chartWidth / Math.max(1, this.xs.length - 1) / viewboxDiff;
+		let xOffset = chartWidth / viewboxDiff * shownPartStart - chartPadding / 2;
 		let tx = step - xOffset;
 		let showEvery = 0;
 		if (step < this.xTickWidth) {

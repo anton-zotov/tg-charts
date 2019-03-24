@@ -1,4 +1,4 @@
-import { fontFamily, yAxisOpacityPerSecond, tickFontSize } from "./config";
+import { fontFamily, yAxisOpacityPerSecond, tickFontSize, yAxisLeftPadding } from "./config";
 import { fs } from "./font";
 import { addElement, scale, approachTarget, translate, shortenNumber, getShortenNumberInfo } from "./functions";
 
@@ -22,7 +22,7 @@ export default class YAxisSet {
 		tickNumbers.forEach((tickN) => {
 			let y = this.getTickY(tickN);
 			let g = addElement(this.mainGroup, 'g', {
-				transform: `translate(0, ${y})`
+				transform: `translate(${yAxisLeftPadding}, ${y})`
 			}, true);
 			this.groups.push([g, tickN]);
 			addElement(g, 'line', {
@@ -59,7 +59,7 @@ export default class YAxisSet {
 			return this.destroy();
 		}
 		this.groups.forEach(([group, tickN]) => {
-			translate(group, 0, this.getTickY(tickN));
+			translate(group, yAxisLeftPadding, this.getTickY(tickN));
 		});
 		if (this.opacity !== this.targetOpacity) {
 			approachTarget(this, 'opacity', this.targetOpacity, yAxisOpacityPerSecond, dt);

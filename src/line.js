@@ -2,8 +2,9 @@ import { addPath, makeD, approachTarget } from "./functions";
 import { lineOpacityPerSecond } from "./config";
 
 export default class Line {
-	constructor(chart, parent, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd) {
+	constructor(chart, parent, y, yCoeff, name, label, ys, color, width, shownPartStart, shownPartEnd, padding = 0) {
 		this.chart = chart;
+		this.padding = padding;
 		this.name = name;
 		this.label = label;
 		this.ys = ys;
@@ -27,16 +28,17 @@ export default class Line {
 	}
 
 	getShownIndexes() {
-		let firstIndex = Math.max(0, Math.floor((this.ys.length - 1) * this.shownPartStart));
-		let endIndex = Math.min(this.ys.length, Math.ceil((this.ys.length - 1) * this.shownPartEnd) + 1);
+		let firstIndex = Math.max(0, Math.floor((this.ys.length - 1) * this.shownPartStart) - 1);
+		let endIndex = Math.min(this.ys.length, Math.ceil((this.ys.length - 1) * this.shownPartEnd) + 2);
 		return [firstIndex, endIndex];
 	}
 
 	getPoints(onlyShown = true) {
 		let width = Math.max(0.001, this.shownPartEnd - this.shownPartStart);
 		let start = Math.max(0.001, this.shownPartStart);
-		let step = this.chart.width / Math.max(1, this.ys.length - 1) / width;
-		let xOffset = this.chart.width / width * start;
+		let chartWidth = this.chart.width - this.padding;
+		let step = chartWidth / Math.max(1, this.ys.length - 1) / width;
+		let xOffset = chartWidth / width * start - this.padding / 2;
 		let ys = this.ys;
 		let startI = 0;
 		if (onlyShown) {
@@ -49,7 +51,7 @@ export default class Line {
 		let temp = ys.map((v, i) => {
 			let currentY = this.y - v * this.yCoeff;
 			let currentPos = (i + startI) * step - xOffset;
-			this.pointPosCache.push([currentPos + step / 2 + 20, currentPos, currentY, i + startI, v]);
+			this.pointPosCache.push([currentPos + step / 2, currentPos, currentY, i + startI, v]);
 			return [currentPos, currentY]
 		});
 		return temp;

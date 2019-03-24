@@ -1,4 +1,4 @@
-import { fontFamily, tickFontSize } from "./config";
+import { fontFamily, tickFontSize, yAxisLeftPadding } from "./config";
 import { fs } from "./font";
 
 export default class YAxis {
@@ -12,12 +12,12 @@ export default class YAxis {
 	create() {
 		let y = this.view.y + this.view.height;
 		this.line = this.view.chart.addElement('line', {
-			x1: 0, y1: y, x2: this.view.chart.width, y2: y,
+			x1: yAxisLeftPadding, y1: y, x2: this.view.chart.width, y2: y,
 			stroke: this.view.chart.theme.axis.line, 'stroke-width': 2
 		});
 		this.tick = this.view.chart.addElement('text',
 			{
-				x: 0, y: y - 8, ...fontFamily,
+				x: yAxisLeftPadding, y: y - 8, ...fontFamily,
 				...fs(tickFontSize), fill: this.view.chart.theme.axis.text
 			});
 		this.tick.textContent = this.tickN;

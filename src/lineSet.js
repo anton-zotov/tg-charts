@@ -2,7 +2,7 @@ import Line from "./line";
 import { addElement } from "./functions";
 
 export default class LineSet {
-	constructor(chart, y, height, lineWidth, data, shownPartStart = 0, shownPartEnd = 1) {
+	constructor(chart, y, height, lineWidth, data, shownPartStart = 0, shownPartEnd = 1, padding = 0) {
 		this.lines = [];
 		this.height = height;
 		this.chart = chart;
@@ -15,7 +15,7 @@ export default class LineSet {
 		let yCoeff = maxY ? (height / maxY) : 0;
 		for (let column of columns) {
 			let [name, ...ys] = column;
-			this.lines.push(new Line(chart, this.mainGroup, y + height, yCoeff, name, data.names[name], ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd));
+			this.lines.push(new Line(chart, this.mainGroup, y + height, yCoeff, name, data.names[name], ys, data.colors[name], lineWidth, shownPartStart, shownPartEnd, padding));
 		}
 		this.highestPoint = maxY;
 		this.targetHighestPoint = maxY;

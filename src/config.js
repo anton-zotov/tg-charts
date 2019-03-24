@@ -7,6 +7,8 @@ export const defaultViewboxStart = 0.4;
 export const defaultViewboxEnd = 0.6;
 export const minViewboxWidthPx = 10;
 export const lineWidth = 6;
+export const chartPadding = 110;
+export const yAxisLeftPadding = 15;
 
 export const viewboxHandleWidth = 10;
 

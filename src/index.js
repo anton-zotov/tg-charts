@@ -4,7 +4,7 @@ import LineChart from './lineChart';
 
 const charts = [];
 function createChart(parent, data, options = {}) {
-	let width = parent.clientWidth - 40;
+	let width = parent.clientWidth;
 	let height = parent.clientHeight / 10 * 6;
 	let lineChart = new LineChart(parent, width, height, data, options);
 	charts.push(lineChart);
