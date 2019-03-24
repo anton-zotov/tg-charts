@@ -14,7 +14,8 @@ export function makeD(coords) {
 	for (let i = 1; i < coords.length; i++) {
 		d += ` L ${coords[i][0]} ${coords[i][1]}`;
 	}
-	return d;
+	let a = coords.map(([x,y]) => `${x} ${y}`);
+	return 'M ' + a.join(' L ');
 }
 
 export function addPath(svg, coords, attributes = {}, prepend = true) {

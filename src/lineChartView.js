@@ -9,6 +9,14 @@ import YAxisSet from "./yAxisSet";
 const yAxesStartX = 15;
 const tickFontSize = 30;
 
+const lineSetMock = {
+	getHighestPoint: () => 50,
+	toggleLine: () => { },
+	update: () => { },
+	redraw: () => { },
+	getPointsAtCoord: () => ([])
+}
+
 export default class LineChartView {
 	constructor(chart, y, height) {
 		this.y = y;
@@ -55,6 +63,7 @@ export default class LineChartView {
 	createLines(data) {
 		this.xs = data.columns[0].slice(1);
 		this.lineSet = new LineSet(this.chart, this.y, this.height, lineWidth, data, defaultViewboxStart, defaultViewboxEnd);
+		// this.lineSet = lineSetMock;
 		this.highestPoint = this.targetHighestPoint = this.lineSet.getHighestPoint();
 		this.createYAxes(true);
 		this.createXTicks();
