@@ -1,5 +1,6 @@
 import './main.scss';
 import data from './chart_data.json';
+import './polyfills';
 import LineChart from './lineChart';
 
 const charts = [];
