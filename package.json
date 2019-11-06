@@ -7,7 +7,7 @@
 	"scripts": {
 		"start": "webpack-dev-server --open",
 		"build": "webpack  --config webpack.prod.js",
-		"prepublish": "npm run build",
+		"predeploy": "npm run build",
 		"deploy": "gh-pages -d build"
 	},
 	"keywords": [],
