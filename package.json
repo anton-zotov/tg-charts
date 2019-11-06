@@ -3,9 +3,12 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
+	"homepage": "https://anton-zotov.github.io/tg-charts/",
 	"scripts": {
 		"start": "webpack-dev-server --open",
-		"build": "webpack  --config webpack.prod.js"
+		"build": "webpack  --config webpack.prod.js",
+		"prepublish": "npm run build",
+		"deploy": "gh-pages -d build"
 	},
 	"keywords": [],
 	"author": "",
@@ -18,6 +21,7 @@
 		"@babel/preset-env": "^7.4.2",
 		"babel-loader": "^8.0.5",
 		"css-loader": "^2.1.1",
+		"gh-pages": "^2.1.1",
 		"html-webpack-plugin": "^3.2.0",
 		"sass": "^1.17.3",
 		"sass-loader": "^7.1.0",
